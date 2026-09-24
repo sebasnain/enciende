@@ -137,7 +137,7 @@
 .activityOverlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(10, 6, 4, 0.55), rgba(10, 6, 4, 0.15) 70%);
+  background: linear-gradient(to top, rgba(10, 6, 4, 0.8), rgba(10, 6, 4, 0.4) 70%);
 }
 
 .activityContent {

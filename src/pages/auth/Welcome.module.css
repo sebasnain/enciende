@@ -4,47 +4,42 @@
   width: 100%;
   display: flex;
   flex-direction: column;
+  background: #c1111f;
+}
+
+.hero {
+  position: relative;
+  flex: 0 0 auto;
+  min-height: 72dvh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background-size: cover;
   background-position: center;
+  overflow: hidden;
 }
 
-.overlay {
+.heroTint {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(20, 10, 6, 0.35) 0%,
-    rgba(20, 10, 6, 0.1) 28%,
-    rgba(20, 10, 6, 0.55) 62%,
-    rgba(15, 7, 4, 0.9) 100%
-  );
-}
-
-.content {
-  position: relative;
-  z-index: 1;
-  flex: 1;
-  width: 100%;
-  max-width: 440px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: var(--space-6) var(--space-5) max(var(--space-6), env(safe-area-inset-bottom));
+  background: linear-gradient(to bottom, rgba(151, 26, 23, 0.72) 0%, rgba(151, 26, 23, 0.6) 45%, rgba(122, 24, 18, 0.82) 100%);
 }
 
 .brand {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   gap: var(--space-2);
-  padding-top: var(--space-6);
+  padding: var(--space-6) var(--space-5) calc(var(--space-6) + 24px);
 }
 
 .logo {
-  width: 160px;
-  height: 160px;
+  width: 150px;
+  height: 150px;
   object-fit: contain;
   filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.5));
 }
@@ -68,10 +63,35 @@
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
 }
 
+.wave {
+  position: absolute;
+  z-index: 1;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 90px;
+  display: block;
+}
+
+.bottom {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  background: #c1111f;
+}
+
 .actions {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+  padding: var(--space-5) var(--space-5) max(var(--space-6), env(safe-area-inset-bottom));
 }
 
 .button {
@@ -85,14 +105,14 @@
 }
 
 .login {
-  background: rgba(20, 10, 6, 0.35);
-  border: 2px solid var(--color-flame-500);
-  color: var(--color-flame-400);
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid var(--color-white);
+  color: var(--color-white);
   backdrop-filter: blur(2px);
 }
 
 .register {
-  background: var(--color-flame-500);
-  color: var(--color-white);
+  background: var(--color-white);
+  color: #c1111f;
   box-shadow: var(--shadow-md);
 }
