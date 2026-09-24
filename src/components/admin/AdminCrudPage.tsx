@@ -9,6 +9,27 @@ export type AdminField = {
   type: 'text' | 'textarea' | 'number' | 'checkbox' | 'datetime'
 }
 
+function toDatetimeLocalValue(raw: unknown): string {
+  if (typeof raw === 'number') {
+    const d = new Date(raw)
+    if (Number.isNaN(d.getTime())) return ''
+    const pad = (n: number) => String(n).padStart(2, '0')
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+  }
+  return typeof raw === 'string' ? raw : ''
+}
+
+function buildPayload(form: Record<string, unknown>, fields: AdminField[]): Record<string, unknown> {
+  const payload = { ...form }
+  for (const field of fields) {
+    if (field.type === 'datetime') {
+      const raw = payload[field.key]
+      payload[field.key] = typeof raw === 'string' && raw ? new Date(raw).getTime() : null
+    }
+  }
+  return payload
+}
+
 interface AdminCrudPageProps<T extends { id: string }> {
   title: string
   fields: AdminField[]
@@ -56,10 +77,11 @@ export function AdminCrudPage<T extends { id: string }>({
   async function handleSubmit() {
     setSaving(true)
     try {
+      const payload = buildPayload(form, fields)
       if (editingId) {
-        await service.update(editingId, form)
+        await service.update(editingId, payload)
       } else {
-        await service.create(form)
+        await service.create(payload)
       }
       resetForm()
       await reload()
@@ -77,7 +99,13 @@ export function AdminCrudPage<T extends { id: string }>({
     <div className={styles.layout}>
       <h2>{title}</h2>
 
-      <div className={styles.form}>
+      <form
+        className={styles.form}
+        onSubmit={(e) => {
+          e.preventDefault()
+          handleSubmit()
+        }}
+      >
         {fields.map((field) => (
           <label key={field.key} className={field.type === 'checkbox' ? styles.checkboxRow : undefined}>
             {field.type !== 'checkbox' && <span>{field.label}</span>}
@@ -100,7 +128,8 @@ export function AdminCrudPage<T extends { id: string }>({
               <input
                 className={styles.input}
                 type={field.type === 'number' ? 'number' : field.type === 'datetime' ? 'datetime-local' : 'text'}
-                value={(form[field.key] as string | number) ?? ''}
+                required={field.type === 'datetime'}
+                value={field.type === 'datetime' ? toDatetimeLocalValue(form[field.key]) : ((form[field.key] as string | number) ?? '')}
                 onChange={(e) =>
                   setForm((f) => ({
                     ...f,
@@ -112,16 +141,16 @@ export function AdminCrudPage<T extends { id: string }>({
           </label>
         ))}
         <div className={styles.formActions}>
-          <Button onClick={handleSubmit} disabled={saving}>
+          <Button type="submit" disabled={saving}>
             {editingId ? 'Guardar cambios' : 'Crear'}
           </Button>
           {editingId && (
-            <Button variant="ghost" onClick={resetForm}>
+            <Button type="button" variant="ghost" onClick={resetForm}>
               Cancelar
             </Button>
           )}
         </div>
-      </div>
+      </form>
 
       {!items && <Spinner />}
       {items?.map((item) => (

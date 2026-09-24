@@ -15,12 +15,13 @@ export function Schedule() {
   }, [])
 
   if (!events) return <Spinner />
-  if (events.length === 0) return <EmptyState message="No hay actividades programadas por ahora." />
+  const validEvents = events.filter((event) => Number.isFinite(event.startAt))
+  if (validEvents.length === 0) return <EmptyState message="No hay actividades programadas por ahora." />
 
   return (
     <div>
       <h1>Cronograma</h1>
-      {events.map((event) => (
+      {validEvents.map((event) => (
         <div key={event.id} className={styles.event}>
           <p className={styles.date}>{formatter.format(new Date(event.startAt))}</p>
           <p className={styles.title}>{event.title}</p>

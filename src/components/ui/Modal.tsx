@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { Icon } from './Icon'
 import styles from './Modal.module.css'
 
 interface ModalProps {
@@ -14,7 +15,7 @@ export function Modal({ title, onClose, children }: ModalProps) {
         <div className={styles.header}>
           <h3>{title}</h3>
           <button className={styles.close} onClick={onClose} aria-label="Cerrar">
-            ×
+            <Icon name="x-lg" />
           </button>
         </div>
         {children}

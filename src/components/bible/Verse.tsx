@@ -1,4 +1,5 @@
 import type { VerseHighlight } from '@/types/bible'
+import { Icon } from '@/components/ui/Icon'
 import styles from './Verse.module.css'
 
 interface VerseProps {
@@ -37,7 +38,11 @@ export function Verse({ number, html, highlight, selected, onSelectVerse, onSele
           </span>{' '}
         </span>
       ))}
-      {highlight?.note && <span className={styles.noteBadge} title={highlight.note}>📝</span>}
+      {highlight?.note && (
+        <span title={highlight.note}>
+          <Icon name="sticky-fill" className={styles.noteBadge} />
+        </span>
+      )}
     </p>
   )
 }

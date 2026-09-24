@@ -34,6 +34,7 @@
 
 .cardIcon {
   font-size: 28px;
+  color: var(--color-flame-500);
 }
 
 .cardTitle {

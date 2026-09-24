@@ -104,13 +104,8 @@ export function AdminDashboard() {
         <AdminCrudPage
           title="Actividades"
           fields={eventFields}
-          defaults={{ title: '', description: '', startAt: '', location: '', category: 'culto' }}
-          service={{
-            list: listUpcomingEvents,
-            create: (data) => createEvent({ ...data, startAt: new Date(data.startAt).getTime(), endAt: null }),
-            update: (id, data) => updateEvent(id, data),
-            remove: deleteEvent,
-          }}
+          defaults={{ title: '', description: '', startAt: '', endAt: null, location: '', category: 'culto' }}
+          service={{ list: listUpcomingEvents, create: createEvent, update: updateEvent, remove: deleteEvent }}
           labelOf={(item) => item.title}
         />
       )}

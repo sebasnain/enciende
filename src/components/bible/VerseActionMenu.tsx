@@ -1,5 +1,6 @@
 import type { HighlightColor } from '@/types/bible'
 import { HighlightColorPicker } from './HighlightColorPicker'
+import { Icon } from '@/components/ui/Icon'
 import styles from './VerseActionMenu.module.css'
 
 interface VerseActionMenuProps {
@@ -16,10 +17,10 @@ export function VerseActionMenu({ verse, color, onColorChange, onOpenNote, onClo
       <span className={styles.label}>Versículo {verse}</span>
       <HighlightColorPicker value={color} onSelect={onColorChange} />
       <button className={styles.noteButton} onClick={onOpenNote}>
-        📝 Nota
+        <Icon name="pencil-square" /> Nota
       </button>
       <button className={styles.closeButton} onClick={onClose} aria-label="Cerrar">
-        ×
+        <Icon name="x-lg" />
       </button>
     </div>
   )

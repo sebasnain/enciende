@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { BibleBook } from '@/types/bible'
 import { Modal } from '@/components/ui/Modal'
+import { Icon } from '@/components/ui/Icon'
 import styles from './ChapterNavigator.module.css'
 
 interface ChapterNavigatorProps {
@@ -33,13 +34,13 @@ export function ChapterNavigator({ books, bookId, chapter, onNavigate }: Chapter
   return (
     <div className={styles.nav}>
       <button className={styles.arrow} onClick={goPrev} aria-label="Capítulo anterior">
-        ‹
+        <Icon name="chevron-left" />
       </button>
       <button className={styles.title} onClick={() => setPickerOpen(true)}>
         {currentBook?.name ?? '...'} {chapter}
       </button>
       <button className={styles.arrow} onClick={goNext} aria-label="Capítulo siguiente">
-        ›
+        <Icon name="chevron-right" />
       </button>
 
       {pickerOpen && (

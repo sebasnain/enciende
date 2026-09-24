@@ -12,6 +12,7 @@ import { useAuth } from '@/context/AuthContext'
 import type { PlanProgress, ReadingPlan, ReadingPlanDay } from '@/types/plans'
 import { Spinner } from '@/components/ui/Spinner'
 import { Button } from '@/components/ui/Button'
+import { Icon } from '@/components/ui/Icon'
 import styles from './PlanDetail.module.css'
 
 export function PlanDetail() {
@@ -71,7 +72,7 @@ export function PlanDetail() {
                   Marcar hecho
                 </Button>
               )}
-              {done && <span>✅</span>}
+              {done && <Icon name="check-circle-fill" className={styles.doneIcon} />}
             </div>
           )
         })}

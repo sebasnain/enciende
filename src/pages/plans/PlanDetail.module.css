@@ -16,3 +16,8 @@
 .dayTitle {
   font-weight: 600;
 }
+
+.doneIcon {
+  color: var(--color-success);
+  font-size: 20px;
+}

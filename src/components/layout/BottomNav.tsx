@@ -1,12 +1,13 @@
 import { NavLink } from 'react-router-dom'
+import { Icon } from '@/components/ui/Icon'
 import styles from './BottomNav.module.css'
 
 const ITEMS = [
-  { to: '/', label: 'Inicio', icon: '🏠' },
-  { to: '/biblia', label: 'Biblia', icon: '📖' },
-  { to: '/planes', label: 'Planes', icon: '🌱' },
-  { to: '/cronograma', label: 'Agenda', icon: '📅' },
-  { to: '/libreria', label: 'Librería', icon: '📚' },
+  { to: '/', label: 'Inicio', icon: 'house-door-fill' },
+  { to: '/biblia', label: 'Biblia', icon: 'book-fill' },
+  { to: '/planes', label: 'Planes', icon: 'flower1' },
+  { to: '/cronograma', label: 'Agenda', icon: 'calendar-event-fill' },
+  { to: '/libreria', label: 'Librería', icon: 'bookshelf' },
 ]
 
 export function BottomNav() {
@@ -19,7 +20,7 @@ export function BottomNav() {
           end={item.to === '/'}
           className={({ isActive }) => `${styles.item} ${isActive ? styles.active : ''}`}
         >
-          <span className={styles.icon}>{item.icon}</span>
+          <Icon name={item.icon} className={styles.icon} />
           <span>{item.label}</span>
         </NavLink>
       ))}
