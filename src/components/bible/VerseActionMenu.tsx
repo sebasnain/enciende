@@ -24,7 +24,7 @@ export function VerseActionMenu({
 }: VerseActionMenuProps) {
   return (
     <div className={styles.bar}>
-      <span className={styles.label}>Versículo {verse}</span>
+      <span className={styles.label}>V{verse}</span>
       <HighlightColorPicker color={color} style={highlightStyle} onSelect={onColorChange} onStyleChange={onStyleChange} />
       <button className={styles.noteButton} onClick={onOpenNote}>
         <Icon name="pencil-square" /> Nota
