@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { StreakFlame } from '@/components/streak/StreakFlame'
-import logo from '@/assets/logo/enciende-logo.png'
+import logo from '@/assets/logo/logo-transparent.png'
 import styles from './TopNav.module.css'
 
 export function TopNav() {
@@ -20,7 +20,7 @@ export function TopNav() {
             Perfil
           </Link>
         ) : (
-          <Link to="/login" className={styles.profileLink}>
+          <Link to="/bienvenida" className={styles.profileLink}>
             Ingresar
           </Link>
         )}

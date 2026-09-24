@@ -3,6 +3,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute'
 import { AdminRoute } from '@/components/layout/AdminRoute'
 import { Home } from '@/pages/Home'
+import { Welcome } from '@/pages/auth/Welcome'
 import { Login } from '@/pages/auth/Login'
 import { Register } from '@/pages/auth/Register'
 import { BibleIndexRedirect } from '@/pages/bible/BibleIndexRedirect'
@@ -19,6 +20,7 @@ import { Profile } from '@/pages/profile/Profile'
 import { AdminDashboard } from '@/pages/admin/AdminDashboard'
 
 export const router = createBrowserRouter([
+  { path: '/bienvenida', element: <Welcome /> },
   {
     element: <AppShell />,
     children: [

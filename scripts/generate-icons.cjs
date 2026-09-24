@@ -1,29 +1,24 @@
 const sharp = require('sharp')
 const path = require('path')
 
-const SRC = path.join(__dirname, '..', 'src', 'assets', 'logo', 'enciende-logo.png')
-const OUT = path.join(__dirname, '..', 'public', 'icons')
+const SQUARE = path.join(__dirname, '..', 'src', 'assets', 'logo', 'logo-square.png')
+const CIRCLE = path.join(__dirname, '..', 'src', 'assets', 'logo', 'logo-circle.png')
+const ICONS_OUT = path.join(__dirname, '..', 'public', 'icons')
+const PUBLIC_OUT = path.join(__dirname, '..', 'public')
 const BG = '#FFCF8F'
 
 async function makeAny(size) {
-  await sharp(SRC)
-    .resize(size, size, { fit: 'contain', background: BG })
-    .png()
-    .toFile(path.join(OUT, `icon-${size}.png`))
+  await sharp(SQUARE).resize(size, size).png().toFile(path.join(ICONS_OUT, `icon-${size}.png`))
 }
 
 async function makeMaskable(size) {
-  const inner = Math.round(size * 0.6)
-  const logo = await sharp(SRC)
-    .resize(inner, inner, { fit: 'contain', background: BG })
-    .toBuffer()
+  const inner = Math.round(size * 0.7)
+  const logo = await sharp(SQUARE).resize(inner, inner).toBuffer()
 
-  await sharp({
-    create: { width: size, height: size, channels: 3, background: BG },
-  })
+  await sharp({ create: { width: size, height: size, channels: 3, background: BG } })
     .composite([{ input: logo, gravity: 'center' }])
     .png()
-    .toFile(path.join(OUT, `icon-maskable-${size}.png`))
+    .toFile(path.join(ICONS_OUT, `icon-maskable-${size}.png`))
 }
 
 async function main() {
@@ -31,8 +26,9 @@ async function main() {
     await makeAny(size)
     await makeMaskable(size)
   }
-  await sharp(SRC).resize(180, 180, { fit: 'contain', background: BG }).png().toFile(path.join(OUT, 'apple-touch-icon.png'))
-  console.log('Icons generated in', OUT)
+  await sharp(SQUARE).resize(180, 180).png().toFile(path.join(ICONS_OUT, 'apple-touch-icon.png'))
+  await sharp(CIRCLE).resize(64, 64).png().toFile(path.join(PUBLIC_OUT, 'favicon.png'))
+  console.log('Icons generated in', ICONS_OUT, 'and favicon in', PUBLIC_OUT)
 }
 
 main()
