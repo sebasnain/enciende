@@ -5,9 +5,9 @@ import styles from './BottomNav.module.css'
 const ITEMS = [
   { to: '/', label: 'Inicio', icon: 'house-door-fill' },
   { to: '/biblia', label: 'Biblia', icon: 'book-fill' },
-  { to: '/planes', label: 'Planes', icon: 'flower1' },
+  { to: '/planes', label: 'Planes', icon: 'cup-hot-fill' },
   { to: '/cronograma', label: 'Agenda', icon: 'calendar-event-fill' },
-  { to: '/libreria', label: 'Librería', icon: 'bookshelf' },
+  { to: '/libreria', label: 'Librería', icon: 'shop' },
 ]
 
 export function BottomNav() {

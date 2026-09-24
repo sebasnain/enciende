@@ -4,11 +4,11 @@ import styles from './Home.module.css'
 
 const LINKS = [
   { to: '/biblia', icon: 'book-fill', title: 'Lectura Bíblica', desc: 'NVI y RVR60' },
-  { to: '/planes', icon: 'flower1', title: 'Planes de Lectura', desc: 'Crece día a día' },
+  { to: '/planes', icon: 'cup-hot-fill', title: 'Planes de Lectura', desc: 'Crece día a día' },
   { to: '/devocionales', icon: 'sun-fill', title: 'Devocionales', desc: 'Reflexiones diarias' },
-  { to: '/estudios', icon: 'compass-fill', title: 'Estudios', desc: 'Profundiza en la Palabra' },
+  { to: '/estudios', icon: 'pencil-square', title: 'Estudios', desc: 'Profundiza en la Palabra' },
   { to: '/cronograma', icon: 'calendar-event-fill', title: 'Cronograma', desc: 'Actividades y cultos' },
-  { to: '/libreria', icon: 'bookshelf', title: 'Librería', desc: 'Recursos de la iglesia' },
+  { to: '/libreria', icon: 'shop', title: 'Librería', desc: 'Recursos de la iglesia' },
 ]
 
 export function Home() {
