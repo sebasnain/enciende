@@ -1,0 +1,34 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: 360px;
+  margin: var(--space-6) auto;
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  text-align: center;
+  color: var(--color-flame-600);
+  margin-bottom: var(--space-2);
+}
+
+.input {
+  border: 1px solid var(--color-cream-500);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  font-size: 15px;
+  background: var(--color-cream-100);
+}
+
+.error {
+  color: var(--color-danger);
+  font-size: 13px;
+}
+
+.switch {
+  text-align: center;
+  font-size: 14px;
+  color: var(--color-ink-700);
+}

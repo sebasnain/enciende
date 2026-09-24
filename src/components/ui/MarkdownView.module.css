@@ -1,0 +1,21 @@
+.markdown {
+  line-height: 1.7;
+  font-size: 16px;
+  color: var(--color-ink-900);
+}
+
+.markdown h1,
+.markdown h2,
+.markdown h3 {
+  font-family: var(--font-serif);
+  margin-top: var(--space-5);
+  margin-bottom: var(--space-2);
+}
+
+.markdown p {
+  margin-bottom: var(--space-4);
+}
+
+.markdown a {
+  color: var(--color-flame-500);
+}

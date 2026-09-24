@@ -1,0 +1,14 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "highlights",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "translation", "order": "ASCENDING" },
+        { "fieldPath": "book", "order": "ASCENDING" },
+        { "fieldPath": "chapter", "order": "ASCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

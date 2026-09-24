@@ -1,0 +1,23 @@
+
+"ENCIENDE" — Tu espacio digital para conectar con la familia de la fe y crecer en tu caminata diaria con Dios.
+> 
+Descripción Principal
+ENCIENDE es una herramienta web comunitaria diseñada para acercarte a la Palabra de Dios y mantenerte conectado con tu comunidad eclesial en cualquier momento y lugar. Diseñada de forma moderna, intuitiva y accesible desde cualquier dispositivo, nuestra plataforma centraliza todo lo que necesitas para nutrir tu vida espiritual y compartir la fe con otros creyentes.
+✨ Características Principales
+ * 📖 Lector Bíblico Interactivo:
+   * Accede a la Biblia en español (versiones NVI y RVR).
+   * Descarga el contenido para consultarlo y leerlo de forma fluida.
+   * Selecciona, subraya versículos con colores personalizados y guarda tus notas personales de estudio.
+   * Consulta diccionarios bíblicos integrados para profundizar en el significado original de los textos.
+ * 🌱 Planes de Lectura y Devocionales:
+   * Inscríbete en planes de lectura bíblica temáticos y comunitarios.
+   * Sigue tu progreso diario paso a paso para mantener una constancia firme en tu vida devocional.
+   * Explora estudios bíblicos y reflexiones preparadas para guiar tu crecimiento espiritual.
+ * 🔴 Transmisiones en Vivo (YouTube):
+   * Conéctate de forma automática a las reuniones y cultos en directo. El reproductor integrado se activa cuando comienza la transmisión oficial de la iglesia.
+ * 📅 Cronograma y Agenda:
+   * Mantente al tanto de todas las actividades, eventos especiales, reuniones de grupos pequeños y cultos programados por la comunidad.
+ * 📚 Librería Institucional:
+   * Explora el catálogo de libros, recursos físicos y material de estudio recomendados por la iglesia para profundizar en tu formación cristiana.
+ * 🤝 Comunidad y Conexión:
+   * Un espacio pensado para unirte con tu familia en la fe, acceder a redes sociales, canales de contacto directo y mantener la comunión activa durante toda la semana.

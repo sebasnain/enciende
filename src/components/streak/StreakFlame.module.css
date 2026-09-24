@@ -1,0 +1,11 @@
+.wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.count {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--color-flame-600);
+}

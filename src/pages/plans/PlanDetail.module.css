@@ -1,0 +1,18 @@
+.day {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--color-cream-100);
+  border: 1px solid var(--color-cream-500);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.dayDone {
+  opacity: 0.6;
+}
+
+.dayTitle {
+  font-weight: 600;
+}

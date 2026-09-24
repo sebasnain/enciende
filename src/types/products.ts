@@ -1,0 +1,27 @@
+export interface Product {
+  id: string
+  name: string
+  priceLabel: string
+  imageURL: string
+  description: string
+  available: boolean
+}
+
+export interface LiveSettings {
+  scheduleDay: number
+  scheduleHour: number
+  scheduleMinute: number
+  durationMinutes: number
+  channelUrl: string
+  manualActive: boolean
+  manualVideoId: string | null
+}
+
+export interface SocialSettings {
+  instagram: string | null
+  whatsapp: string | null
+  youtube: string | null
+  website: string | null
+  address: string | null
+  mapUrl: string | null
+}
