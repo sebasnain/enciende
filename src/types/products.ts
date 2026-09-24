@@ -1,7 +1,11 @@
+export const PRODUCT_CATEGORIES = ['Biblias', 'Niños', 'Estudio bíblico', 'Biografías', 'Devocionales', 'Regalería'] as const
+
 export interface Product {
   id: string
   name: string
-  priceLabel: string
+  category: string
+  price: number
+  originalPrice: number | null
   imageURL: string
   description: string
   available: boolean

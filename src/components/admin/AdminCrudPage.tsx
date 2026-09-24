@@ -6,7 +6,8 @@ import styles from './AdminCrudPage.module.css'
 export type AdminField = {
   key: string
   label: string
-  type: 'text' | 'textarea' | 'number' | 'checkbox' | 'datetime'
+  type: 'text' | 'textarea' | 'number' | 'checkbox' | 'datetime' | 'select'
+  options?: string[]
 }
 
 function toDatetimeLocalValue(raw: unknown): string {
@@ -128,6 +129,18 @@ export function AdminCrudPage<T extends { id: string }>({
                   value={(form[field.key] as string) ?? ''}
                   onChange={(e) => setForm((f) => ({ ...f, [field.key]: e.target.value }))}
                 />
+              ) : field.type === 'select' ? (
+                <select
+                  className={styles.input}
+                  value={(form[field.key] as string) ?? ''}
+                  onChange={(e) => setForm((f) => ({ ...f, [field.key]: e.target.value }))}
+                >
+                  {field.options?.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
               ) : field.type === 'checkbox' ? (
                 <>
                   <input
