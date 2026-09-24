@@ -1,4 +1,4 @@
-export type TranslationCode = 'NVI' | 'RV1960'
+export type TranslationCode = 'NVI' | 'RV1960' | 'RV2004' | 'NTV' | 'LBLA' | 'PDT' | 'BTX3'
 
 export interface BibleBook {
   bookid: number
