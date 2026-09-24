@@ -64,6 +64,10 @@
   opacity: 0.9;
 }
 
+.planBar {
+  margin-top: 2px;
+}
+
 .planChevron {
   position: relative;
   z-index: 1;

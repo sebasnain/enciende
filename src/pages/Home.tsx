@@ -7,6 +7,7 @@ import { getSocialSettings } from '@/services/live.service'
 import type { ChurchEvent } from '@/types/events'
 import type { SocialSettings } from '@/types/products'
 import { Icon } from '@/components/ui/Icon'
+import { ProgressBar } from '@/components/ui/ProgressBar'
 import planBg from '@/assets/home/plan.jpg'
 import activityBg from '@/assets/home/activity.jpg'
 import studiesBg from '@/assets/home/studies.jpg'
@@ -62,6 +63,7 @@ export function Home() {
               </span>
             )}
           </div>
+          {activePlan && <ProgressBar value={completedCount} max={activePlan.plan.durationDays} className={styles.planBar} />}
         </div>
         <Icon name="chevron-right" className={styles.planChevron} />
       </Link>

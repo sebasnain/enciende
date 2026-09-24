@@ -2,6 +2,7 @@ import {
   addDoc,
   collection,
   deleteDoc,
+  deleteField,
   doc,
   getDoc,
   getDocs,
@@ -69,12 +70,11 @@ export async function enrollInPlan(uid: string, planId: string) {
   )
 }
 
-export async function markDayComplete(uid: string, planId: string, dayId: string) {
-  await setDoc(
-    progressRef(uid, planId),
-    { completedDayIds: { [dayId]: true }, updatedAt: serverTimestamp() },
-    { merge: true },
-  )
+export async function setDayComplete(uid: string, planId: string, dayId: string, complete: boolean) {
+  await updateDoc(progressRef(uid, planId), {
+    [`completedDayIds.${dayId}`]: complete ? true : deleteField(),
+    updatedAt: serverTimestamp(),
+  })
 }
 
 export interface ActivePlanProgress {
