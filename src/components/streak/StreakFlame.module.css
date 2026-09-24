@@ -4,6 +4,10 @@
   gap: 4px;
 }
 
+.flame {
+  object-fit: contain;
+}
+
 .count {
   font-weight: 700;
   font-size: 14px;

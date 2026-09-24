@@ -47,7 +47,7 @@ Para regenerar los íconos si cambia el logo: `npm install sharp` (no queda como
 
 ## Racha (fuego)
 
-`StreakFlame` (`src/components/streak/StreakFlame.tsx`) dibuja la llama como SVG escalado según la racha, como placeholder. Cuando tengas las 5 ilustraciones definitivas, reemplaza el SVG por `<img>` apuntando a `src/assets/streak/fuego-{1..5}.png` según el tramo (`TIERS` en ese mismo archivo).
+`StreakFlame` (`src/components/streak/StreakFlame.tsx`) muestra una de las 5 ilustraciones en `src/assets/streak/fuego-{1..5}.png` según el tramo de racha (`TIERS` en ese mismo archivo: `fuego-5` para 0 días hasta `fuego-1` para 14+ días).
 
 ## Caché offline de la Biblia
 
