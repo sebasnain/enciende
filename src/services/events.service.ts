@@ -29,3 +29,18 @@ export async function updateEvent(id: string, patch: Partial<ChurchEvent>) {
 export async function deleteEvent(id: string) {
   await deleteDoc(doc(eventsRef, id))
 }
+
+export async function getTodayEvent(): Promise<ChurchEvent | null> {
+  const events = await listUpcomingEvents()
+  const now = new Date()
+  const todayEvent = events.find((event) => {
+    const eventDate = new Date(event.startAt)
+    return (
+      Number.isFinite(event.startAt) &&
+      eventDate.getFullYear() === now.getFullYear() &&
+      eventDate.getMonth() === now.getMonth() &&
+      eventDate.getDate() === now.getDate()
+    )
+  })
+  return todayEvent ?? null
+}

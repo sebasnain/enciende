@@ -83,7 +83,7 @@ export function LiveSettingsEditor() {
 
       <h2>Redes y contacto</h2>
       <div className={styles.form}>
-        {(['instagram', 'whatsapp', 'youtube', 'website', 'address', 'mapUrl'] as const).map((key) => (
+        {(['facebook', 'instagram', 'whatsapp', 'youtube', 'website', 'address', 'mapUrl'] as const).map((key) => (
           <label key={key}>
             <span>{key}</span>
             <input

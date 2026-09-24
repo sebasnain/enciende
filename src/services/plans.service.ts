@@ -76,3 +76,18 @@ export async function markDayComplete(uid: string, planId: string, dayId: string
     { merge: true },
   )
 }
+
+export interface ActivePlanProgress {
+  plan: ReadingPlan
+  progress: PlanProgress
+}
+
+export async function getActivePlanProgress(uid: string): Promise<ActivePlanProgress | null> {
+  const progressCollectionRef = collection(db, 'users', uid, 'planProgress')
+  const snap = await getDocs(query(progressCollectionRef, orderBy('updatedAt', 'desc')))
+  if (snap.empty) return null
+
+  const progress = snap.docs[0].data() as PlanProgress
+  const plan = await getPlan(progress.planId)
+  return plan ? { plan, progress } : null
+}

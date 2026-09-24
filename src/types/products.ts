@@ -18,6 +18,7 @@ export interface LiveSettings {
 }
 
 export interface SocialSettings {
+  facebook: string | null
   instagram: string | null
   whatsapp: string | null
   youtube: string | null

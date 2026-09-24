@@ -1,42 +1,211 @@
-.hero {
-  text-align: center;
-  padding: var(--space-6) 0;
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
 }
 
-.title {
-  font-family: var(--font-serif);
-  font-size: 28px;
-  color: var(--color-flame-600);
+/* Plan card */
+
+.planCard {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 120px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  padding: var(--space-4) var(--space-5);
+  background-size: cover;
+  background-position: center;
+  text-decoration: none;
+  color: var(--color-white);
 }
 
-.subtitle {
-  color: var(--color-ink-700);
-  margin-top: var(--space-2);
+.planOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(10, 6, 4, 0.85), rgba(10, 6, 4, 0.35) 60%, rgba(10, 6, 4, 0.1));
 }
 
-.grid {
+.planContent {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.planTitle {
+  font-size: 22px;
+  font-weight: 700;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+}
+
+.planMeta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.planChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(2px);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.planProgress {
+  opacity: 0.9;
+}
+
+.planChevron {
+  position: relative;
+  z-index: 1;
+  font-size: 24px;
+  opacity: 0.85;
+}
+
+/* Social row */
+
+.socialRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--color-cream-400);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-4);
+}
+
+.socialIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  color: var(--color-white);
+  font-size: 20px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.facebook {
+  background: #1877f2;
+}
+
+.whatsapp {
+  background: #25d366;
+}
+
+.instagram {
+  background: radial-gradient(circle at 30% 110%, #fdf497 0%, #fd5949 45%, #d6249f 60%, #285aeb 90%);
+}
+
+.youtube {
+  width: auto;
+  border-radius: 999px;
+  padding: 0 var(--space-4);
+  background: var(--color-flame-500);
+  font-weight: 700;
+  font-size: 15px;
+}
+
+/* Activity card */
+
+.activityCard {
+  position: relative;
+  display: block;
+  min-height: 150px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  text-decoration: none;
+}
+
+.activityOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(10, 6, 4, 0.55), rgba(10, 6, 4, 0.15) 70%);
+}
+
+.activityContent {
+  position: relative;
+  z-index: 1;
+  padding: var(--space-4) var(--space-5);
+}
+
+.activityTitle {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--color-flame-400);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+}
+
+.activitySubtitle {
+  color: var(--color-white);
+  font-weight: 600;
+  margin-top: 4px;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+}
+
+.activityButton {
+  position: absolute;
+  z-index: 1;
+  right: var(--space-4);
+  bottom: var(--space-4);
+  background: var(--color-flame-400);
+  color: var(--color-white);
+  font-weight: 700;
+  font-size: 13px;
+  padding: 6px 16px;
+  border-radius: 999px;
+}
+
+/* Mini cards */
+
+.miniGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: var(--space-3);
 }
 
-.card {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  background: var(--color-cream-100);
-  border: 1px solid var(--color-cream-500);
+.miniCard {
+  position: relative;
+  display: block;
+  aspect-ratio: 1;
   border-radius: var(--radius-lg);
-  padding: var(--space-4);
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
   text-decoration: none;
-  color: var(--color-ink-900);
 }
 
-.cardIcon {
-  font-size: 28px;
-  color: var(--color-flame-500);
+.miniOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(10, 6, 4, 0.7), rgba(10, 6, 4, 0.05) 55%);
 }
 
-.cardTitle {
+.miniLabel {
+  position: absolute;
+  z-index: 1;
+  left: var(--space-3);
+  bottom: var(--space-3);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-flame-500);
+  color: var(--color-white);
   font-weight: 700;
+  font-size: 13px;
+  padding: 6px 14px;
+  border-radius: 999px;
 }
