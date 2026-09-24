@@ -43,10 +43,10 @@
 }
 
 .logo {
-  width: 96px;
-  height: 96px;
+  width: 160px;
+  height: 160px;
   object-fit: contain;
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.45));
+  filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.5));
 }
 
 .title {
