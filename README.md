@@ -39,9 +39,11 @@ El primer usuario admin se promueve manualmente: registra tu cuenta desde `/regi
 
 Desde `/admin` → pestaña "En vivo" se configura el día/hora programado del culto (por defecto domingos 19:00, 2 horas de duración) y los links de redes sociales/contacto.
 
-## Íconos PWA
+## Íconos PWA (instalar en el celular)
 
-`public/icons/icon-192.png` y `icon-512.png` son el logo original sin recortar a cuadrado — sirven para desarrollar, pero antes de publicar la PWA conviene generarlos correctamente cuadrados (192×192 y 512×512, con una versión "maskable") desde `src/assets/logo/enciende-logo.png`, por ejemplo con [realfavicongenerator.net](https://realfavicongenerator.net) o `npx pwa-asset-generator`.
+`public/icons/` tiene los íconos cuadrados (`icon-192.png`, `icon-512.png`, y las versiones `icon-maskable-*.png` con margen para el recorte circular/squircle de Android) generados desde `src/assets/logo/enciende-logo.png`. En Android, al entrar a la web con Chrome aparece la opción "Agregar a la pantalla de inicio" / "Instalar app" y queda como un ícono más, gracias al manifest (`vite-plugin-pwa`) y al service worker. En iPhone no hay instalación real de PWA vía Safari con el mismo nivel de integración, pero al menos el ícono de "Agregar a inicio" usa `apple-touch-icon.png`.
+
+Para regenerar los íconos si cambia el logo: `npm install sharp` (no queda como dependencia permanente) y `node scripts/generate-icons.cjs`.
 
 ## Racha (fuego)
 
