@@ -39,13 +39,14 @@ export function Home() {
 
   const completedCount = activePlan ? Object.keys(activePlan.progress.completedDayIds).length : 0
   const hasSocial = social && (social.facebook || social.whatsapp || social.instagram || social.youtube)
+  const planImage = activePlan?.plan.coverImage || planBg
 
   return (
     <div className={styles.page}>
       <Link
         to={activePlan ? `/planes/${activePlan.plan.id}` : '/planes'}
         className={styles.planCard}
-        style={{ backgroundImage: `url(${planBg})` }}
+        style={{ backgroundImage: `url(${planImage})` }}
       >
         <div className={styles.planOverlay} />
         <div className={styles.planContent}>
