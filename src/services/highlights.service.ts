@@ -8,7 +8,7 @@ import {
   where,
 } from 'firebase/firestore'
 import { db } from '@/firebase/config'
-import type { HighlightColor, TranslationCode, VerseHighlight } from '@/types/bible'
+import type { HighlightColor, HighlightStyle, TranslationCode, VerseHighlight } from '@/types/bible'
 
 function highlightId(translation: TranslationCode, book: number, chapter: number, verse: number) {
   return `${translation}_${book}_${chapter}_${verse}`
@@ -46,11 +46,12 @@ export async function setVerseHighlight(
   chapter: number,
   verse: number,
   color: HighlightColor | null,
+  style: HighlightStyle | null,
 ) {
   const id = highlightId(translation, book, chapter, verse)
   await setDoc(
     doc(highlightsRef(uid), id),
-    { translation, book, chapter, verse, color, updatedAt: serverTimestamp() },
+    { translation, book, chapter, verse, color, style, updatedAt: serverTimestamp() },
     { merge: true },
   )
 }

@@ -11,6 +11,14 @@
   outline: 2px solid var(--color-flame-500);
 }
 
+.circled {
+  border: 2.5px solid var(--circle-color, var(--color-flame-500));
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  padding: 6px 14px;
+  margin: 2px 0;
+  filter: url(#pencil-wobble);
+}
+
 .number {
   border: none;
   background: none;

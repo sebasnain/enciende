@@ -28,6 +28,7 @@ export interface DictionaryEntry {
 }
 
 export type HighlightColor = 'amarillo' | 'verde' | 'celeste' | 'rosa' | 'lila'
+export type HighlightStyle = 'fill' | 'circle'
 
 export interface VerseHighlight {
   id: string
@@ -36,6 +37,7 @@ export interface VerseHighlight {
   chapter: number
   verse: number
   color: HighlightColor | null
+  style: HighlightStyle | null
   note: string | null
   updatedAt: number
 }

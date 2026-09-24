@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { useBiblePosition } from '@/context/BibleContext'
 import { useBibleChapter } from '@/hooks/useBibleChapter'
@@ -13,11 +13,12 @@ import { NoteEditorModal } from '@/components/bible/NoteEditorModal'
 import { DictionaryPopover } from '@/components/bible/DictionaryPopover'
 import { Spinner } from '@/components/ui/Spinner'
 import { Button } from '@/components/ui/Button'
-import type { TranslationCode } from '@/types/bible'
+import type { HighlightStyle, TranslationCode } from '@/types/bible'
 import styles from './BibleReader.module.css'
 
 export function BibleReader() {
   const { translation, bookId, chapter } = useParams()
+  const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const { user } = useAuth()
   const { setPosition } = useBiblePosition()
@@ -25,18 +26,32 @@ export function BibleReader() {
   const t = (translation as TranslationCode) ?? 'NVI'
   const b = Number(bookId)
   const c = Number(chapter)
+  const targetVerse = Number(searchParams.get('v')) || null
 
   const books = useBooks(t)
   const { verses, loading, error, cached, downloading, download } = useBibleChapter(t, b, c)
   const { highlights, setColor, setNote } = useHighlights(user?.uid ?? null, t, b, c)
 
+  useEffect(() => {
+    if (loading || !targetVerse) return
+    document.getElementById(`verse-${targetVerse}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, targetVerse, b, c])
+
   const [selectedVerse, setSelectedVerse] = useState<number | null>(null)
+  const [pickerStyle, setPickerStyle] = useState<HighlightStyle>('fill')
   const [noteVerse, setNoteVerse] = useState<number | null>(null)
   const [dictionaryWord, setDictionaryWord] = useState<string | null>(null)
 
   function goTo(nextBook: number, nextChapter: number, nextTranslation: TranslationCode = t) {
     setPosition({ translation: nextTranslation, book: nextBook, chapter: nextChapter })
     navigate(`/biblia/${nextTranslation}/${nextBook}/${nextChapter}`)
+  }
+
+  function selectVerse(v: number) {
+    const next = selectedVerse === v ? null : v
+    setSelectedVerse(next)
+    if (next !== null) setPickerStyle(highlights[next]?.style ?? 'fill')
   }
 
   return (
@@ -63,7 +78,7 @@ export function BibleReader() {
           verses={verses}
           highlights={highlights}
           selectedVerse={selectedVerse}
-          onSelectVerse={(v) => setSelectedVerse(selectedVerse === v ? null : v)}
+          onSelectVerse={selectVerse}
           onSelectWord={(word) => setDictionaryWord(word)}
         />
       )}
@@ -72,7 +87,13 @@ export function BibleReader() {
         <VerseActionMenu
           verse={selectedVerse}
           color={highlights[selectedVerse]?.color ?? null}
-          onColorChange={(color) => setColor(selectedVerse, color)}
+          highlightStyle={pickerStyle}
+          onColorChange={(color) => setColor(selectedVerse, color, pickerStyle)}
+          onStyleChange={(style) => {
+            setPickerStyle(style)
+            const currentColor = highlights[selectedVerse]?.color ?? null
+            if (currentColor) setColor(selectedVerse, currentColor, style)
+          }}
           onOpenNote={() => setNoteVerse(selectedVerse)}
           onClose={() => setSelectedVerse(null)}
         />

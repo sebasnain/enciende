@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import {
   enrollInPlan,
   getPlan,
@@ -9,7 +9,8 @@ import {
 } from '@/services/plans.service'
 import { touchStreak } from '@/services/streak.service'
 import { useAuth } from '@/context/AuthContext'
-import { formatPassageRefs } from '@/utils/passage'
+import { useBiblePosition } from '@/context/BibleContext'
+import { buildPassageRoute, formatPassageRefs } from '@/utils/passage'
 import type { PlanProgress, ReadingPlan, ReadingPlanDay } from '@/types/plans'
 import { Spinner } from '@/components/ui/Spinner'
 import { Button } from '@/components/ui/Button'
@@ -20,6 +21,7 @@ import styles from './PlanDetail.module.css'
 export function PlanDetail() {
   const { planId = '' } = useParams()
   const { user, profile, refreshProfile } = useAuth()
+  const { position, setPosition } = useBiblePosition()
   const [plan, setPlan] = useState<ReadingPlan | null>(null)
   const [days, setDays] = useState<ReadingPlanDay[]>([])
   const [progress, setProgress] = useState<PlanProgress | null>(null)
@@ -94,7 +96,22 @@ export function PlanDetail() {
                   <p className={styles.dayTitle}>
                     Día {day.order}: {day.title}
                   </p>
-                  {day.passageRefs.length > 0 && <p className={styles.dayPassage}>{formatPassageRefs(day.passageRefs)}</p>}
+                  {day.passageRefs.length > 0 && (
+                    <p className={styles.dayPassage}>
+                      {day.passageRefs.map((ref, i) => (
+                        <span key={i}>
+                          {i > 0 && '; '}
+                          <Link
+                            to={buildPassageRoute(ref, position.translation)}
+                            className={styles.dayPassageLink}
+                            onClick={() => setPosition({ translation: position.translation, book: ref.book, chapter: ref.chapter })}
+                          >
+                            {formatPassageRefs([ref])}
+                          </Link>
+                        </span>
+                      ))}
+                    </p>
+                  )}
                 </div>
               </div>
               {day.devotionalText && <p className={styles.dayText}>{day.devotionalText}</p>}

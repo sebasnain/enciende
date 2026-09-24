@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react'
 import type { VerseHighlight } from '@/types/bible'
 import { Icon } from '@/components/ui/Icon'
 import styles from './Verse.module.css'
@@ -18,10 +19,16 @@ function toPlainWords(html: string): string[] {
 
 export function Verse({ number, html, highlight, selected, onSelectVerse, onSelectWord }: VerseProps) {
   const words = toPlainWords(html)
-  const background = highlight?.color ? `var(--highlight-${highlight.color})` : undefined
+  const isCircle = highlight?.style === 'circle' && !!highlight.color
+  const background = !isCircle && highlight?.color ? `var(--highlight-${highlight.color})` : undefined
+  const circleColor = isCircle ? `var(--highlight-${highlight!.color})` : undefined
 
   return (
-    <p className={`${styles.verse} ${selected ? styles.selected : ''}`} style={{ background }}>
+    <p
+      id={`verse-${number}`}
+      className={`${styles.verse} ${selected ? styles.selected : ''} ${isCircle ? styles.circled : ''}`}
+      style={{ background, '--circle-color': circleColor } as CSSProperties}
+    >
       <button className={styles.number} onClick={onSelectVerse} aria-label={`Seleccionar versículo ${number}`}>
         {number}
       </button>

@@ -88,16 +88,25 @@ export function AdminDashboard() {
       )}
 
       {tab === 'Planes' && (
-        <>
-          <AdminCrudPage
-            title="Planes de lectura"
-            fields={planFields}
-            defaults={{ title: '', description: '', durationDays: 7, category: '', coverImage: '', published: false }}
-            service={{ list: listPublishedPlans, create: createPlan, update: updatePlan, remove: deletePlan }}
-            labelOf={(item) => item.title}
-          />
-          <PlanDaysEditor />
-        </>
+        <AdminCrudPage
+          title="Planes de lectura"
+          fields={planFields}
+          defaults={{ title: '', description: '', durationDays: 7, category: '', coverImage: '', published: false }}
+          service={{ list: listPublishedPlans, create: createPlan, update: updatePlan, remove: deletePlan }}
+          labelOf={(item) => item.title}
+          keepEditingAfterCreate
+          renderAfterField={(key, { form, editingId }) =>
+            key === 'durationDays' ? (
+              editingId ? (
+                <PlanDaysEditor planId={editingId} durationDays={Number(form.durationDays) || 0} />
+              ) : (
+                <p style={{ color: 'var(--color-ink-400)', fontSize: 13, margin: '4px 0 0' }}>
+                  Creá el plan para poder configurar sus días.
+                </p>
+              )
+            ) : null
+          }
+        />
       )}
 
       {tab === 'Cronograma' && (

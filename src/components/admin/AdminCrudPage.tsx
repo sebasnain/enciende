@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Spinner } from '@/components/ui/Spinner'
 import styles from './AdminCrudPage.module.css'
@@ -41,6 +41,10 @@ interface AdminCrudPageProps<T extends { id: string }> {
     remove: (id: string) => Promise<unknown>
   }
   labelOf: (item: T) => string
+  /** Render extra content right after a given field (matched by key), e.g. a follow-up action tied to that field's value. */
+  renderAfterField?: (key: string, ctx: { form: Record<string, unknown>; editingId: string | null }) => ReactNode
+  /** After creating a new item, keep it open for editing instead of resetting the form. */
+  keepEditingAfterCreate?: boolean
 }
 
 export function AdminCrudPage<T extends { id: string }>({
@@ -49,6 +53,8 @@ export function AdminCrudPage<T extends { id: string }>({
   defaults,
   service,
   labelOf,
+  renderAfterField,
+  keepEditingAfterCreate,
 }: AdminCrudPageProps<T>) {
   const [items, setItems] = useState<T[] | null>(null)
   const [form, setForm] = useState<Record<string, unknown>>(defaults)
@@ -80,10 +86,16 @@ export function AdminCrudPage<T extends { id: string }>({
       const payload = buildPayload(form, fields)
       if (editingId) {
         await service.update(editingId, payload)
+        resetForm()
       } else {
-        await service.create(payload)
+        const newId = await service.create(payload)
+        if (keepEditingAfterCreate && typeof newId === 'string') {
+          setEditingId(newId)
+          setForm({ ...payload, id: newId })
+        } else {
+          resetForm()
+        }
       }
-      resetForm()
       await reload()
     } finally {
       setSaving(false)
@@ -107,38 +119,41 @@ export function AdminCrudPage<T extends { id: string }>({
         }}
       >
         {fields.map((field) => (
-          <label key={field.key} className={field.type === 'checkbox' ? styles.checkboxRow : undefined}>
-            {field.type !== 'checkbox' && <span>{field.label}</span>}
-            {field.type === 'textarea' ? (
-              <textarea
-                className={styles.textarea}
-                value={(form[field.key] as string) ?? ''}
-                onChange={(e) => setForm((f) => ({ ...f, [field.key]: e.target.value }))}
-              />
-            ) : field.type === 'checkbox' ? (
-              <>
-                <input
-                  type="checkbox"
-                  checked={!!form[field.key]}
-                  onChange={(e) => setForm((f) => ({ ...f, [field.key]: e.target.checked }))}
+          <div key={field.key}>
+            <label className={field.type === 'checkbox' ? styles.checkboxRow : undefined}>
+              {field.type !== 'checkbox' && <span>{field.label}</span>}
+              {field.type === 'textarea' ? (
+                <textarea
+                  className={styles.textarea}
+                  value={(form[field.key] as string) ?? ''}
+                  onChange={(e) => setForm((f) => ({ ...f, [field.key]: e.target.value }))}
                 />
-                {field.label}
-              </>
-            ) : (
-              <input
-                className={styles.input}
-                type={field.type === 'number' ? 'number' : field.type === 'datetime' ? 'datetime-local' : 'text'}
-                required={field.type === 'datetime'}
-                value={field.type === 'datetime' ? toDatetimeLocalValue(form[field.key]) : ((form[field.key] as string | number) ?? '')}
-                onChange={(e) =>
-                  setForm((f) => ({
-                    ...f,
-                    [field.key]: field.type === 'number' ? Number(e.target.value) : e.target.value,
-                  }))
-                }
-              />
-            )}
-          </label>
+              ) : field.type === 'checkbox' ? (
+                <>
+                  <input
+                    type="checkbox"
+                    checked={!!form[field.key]}
+                    onChange={(e) => setForm((f) => ({ ...f, [field.key]: e.target.checked }))}
+                  />
+                  {field.label}
+                </>
+              ) : (
+                <input
+                  className={styles.input}
+                  type={field.type === 'number' ? 'number' : field.type === 'datetime' ? 'datetime-local' : 'text'}
+                  required={field.type === 'datetime'}
+                  value={field.type === 'datetime' ? toDatetimeLocalValue(form[field.key]) : ((form[field.key] as string | number) ?? '')}
+                  onChange={(e) =>
+                    setForm((f) => ({
+                      ...f,
+                      [field.key]: field.type === 'number' ? Number(e.target.value) : e.target.value,
+                    }))
+                  }
+                />
+              )}
+            </label>
+            {renderAfterField?.(field.key, { form, editingId })}
+          </div>
         ))}
         <div className={styles.formActions}>
           <Button type="submit" disabled={saving}>

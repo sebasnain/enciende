@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getChapterHighlights, setVerseHighlight, setVerseNote } from '@/services/highlights.service'
-import type { HighlightColor, TranslationCode, VerseHighlight } from '@/types/bible'
+import type { HighlightColor, HighlightStyle, TranslationCode, VerseHighlight } from '@/types/bible'
 
 export function useHighlights(
   uid: string | null,
@@ -27,13 +27,23 @@ export function useHighlights(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uid, translation, book, chapter])
 
-  async function setColor(verse: number, color: HighlightColor | null) {
+  async function setColor(verse: number, color: HighlightColor | null, style: HighlightStyle = 'fill') {
     if (!uid) return
+    const appliedStyle = color ? style : null
     setHighlights((prev) => ({
       ...prev,
-      [verse]: { ...(prev[verse] ?? { id: '', note: null }), translation, book, chapter, verse, color, updatedAt: Date.now() } as VerseHighlight,
+      [verse]: {
+        ...(prev[verse] ?? { id: '', note: null }),
+        translation,
+        book,
+        chapter,
+        verse,
+        color,
+        style: appliedStyle,
+        updatedAt: Date.now(),
+      } as VerseHighlight,
     }))
-    await setVerseHighlight(uid, translation, book, chapter, verse, color)
+    await setVerseHighlight(uid, translation, book, chapter, verse, color, appliedStyle)
   }
 
   async function setNote(verse: number, note: string) {

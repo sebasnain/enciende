@@ -48,9 +48,9 @@ export async function deletePlan(planId: string) {
   await deleteDoc(doc(plansRef, planId))
 }
 
-export async function addPlanDay(planId: string, day: Omit<ReadingPlanDay, 'id'>) {
-  const daysRef = collection(db, 'plans', planId, 'days')
-  await addDoc(daysRef, day)
+export async function setPlanDay(planId: string, order: number, day: Omit<ReadingPlanDay, 'id' | 'order'>) {
+  const dayRef = doc(db, 'plans', planId, 'days', String(order))
+  await setDoc(dayRef, { ...day, order })
 }
 
 function progressRef(uid: string, planId: string) {

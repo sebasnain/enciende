@@ -1,3 +1,37 @@
+.wrap {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.styleToggle {
+  display: flex;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+}
+
+.styleButton {
+  border: none;
+  background: none;
+  color: var(--color-white);
+  opacity: 0.6;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.styleActive {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.18);
+}
+
 .row {
   display: flex;
   gap: var(--space-3);
@@ -11,6 +45,16 @@
   cursor: pointer;
 }
 
+.swatchOutline {
+  background: transparent !important;
+  border-width: 3px;
+}
+
 .selected {
   border-color: var(--color-ink-900);
+}
+
+.swatchOutline.selected {
+  border-color: var(--color-white);
+  outline: 2px solid var(--color-ink-900);
 }
