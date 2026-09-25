@@ -1,17 +1,28 @@
+import { useMemo } from 'react'
 import type { BibleVerse, VerseHighlight } from '@/types/bible'
 import { Verse } from './Verse'
+
+const NONE: VerseHighlight[] = []
 
 interface VerseListProps {
   verses: BibleVerse[]
   highlights: VerseHighlight[]
   notes: Record<number, string>
-  onSelect: (verse: number, start: number, end: number, text: string) => void
-  onRemoveHighlight: (id: string) => void
   onOpenNote: (verse: number) => void
   onLookupWord: (word: string) => void
 }
 
-export function VerseList({ verses, highlights, notes, onSelect, onRemoveHighlight, onOpenNote, onLookupWord }: VerseListProps) {
+export function VerseList({ verses, highlights, notes, onOpenNote, onLookupWord }: VerseListProps) {
+  const byVerse = useMemo(() => {
+    const map = new Map<number, VerseHighlight[]>()
+    for (const h of highlights) {
+      const list = map.get(h.verse)
+      if (list) list.push(h)
+      else map.set(h.verse, [h])
+    }
+    return map
+  }, [highlights])
+
   return (
     <div>
       {verses.map((verse) => (
@@ -19,11 +30,9 @@ export function VerseList({ verses, highlights, notes, onSelect, onRemoveHighlig
           key={verse.verse}
           number={verse.verse}
           html={verse.text}
-          highlights={highlights.filter((h) => h.verse === verse.verse)}
+          highlights={byVerse.get(verse.verse) ?? NONE}
           note={notes[verse.verse]}
-          onOpenNote={() => onOpenNote(verse.verse)}
-          onSelect={onSelect}
-          onRemoveHighlight={onRemoveHighlight}
+          onOpenNote={onOpenNote}
           onLookupWord={onLookupWord}
         />
       ))}

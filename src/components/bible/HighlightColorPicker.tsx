@@ -19,27 +19,28 @@ export function HighlightColorPicker({ color, style, onSelect, onStyleChange }: 
           type="button"
           className={`${styles.styleButton} ${style === 'fill' ? styles.styleActive : ''}`}
           onClick={() => onStyleChange('fill')}
-          aria-label="Resaltado con color"
-          title="Resaltado"
+          aria-label="Marcador"
+          title="Marcador"
         >
-          <Icon name="pen-fill" />
+          <Icon name="highlighter" />
         </button>
         <button
           type="button"
-          className={`${styles.styleButton} ${style === 'circle' ? styles.styleActive : ''}`}
-          onClick={() => onStyleChange('circle')}
-          aria-label="Círculo a mano"
-          title="Círculo"
+          className={`${styles.styleButton} ${style === 'pencil' ? styles.styleActive : ''}`}
+          onClick={() => onStyleChange('pencil')}
+          aria-label="Lápiz"
+          title="Lápiz"
         >
-          <Icon name="circle" />
+          <Icon name="pencil" />
         </button>
       </div>
       <div className={styles.row}>
         {COLORS.map((c) => (
           <button
             key={c}
-            className={`${styles.swatch} ${color === c ? styles.selected : ''} ${style === 'circle' ? styles.swatchOutline : ''}`}
-            style={style === 'circle' ? { borderColor: `var(--highlight-${c})` } : { background: `var(--highlight-${c})` }}
+            type="button"
+            className={`${styles.swatch} ${color === c ? styles.selected : ''} ${style === 'pencil' ? styles.swatchOutline : ''}`}
+            style={style === 'pencil' ? { borderColor: `var(--highlight-${c})` } : { background: `var(--highlight-${c})` }}
             aria-label={c}
             onClick={() => onSelect(color === c ? null : c)}
           />

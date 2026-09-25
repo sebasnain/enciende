@@ -1,75 +1,33 @@
-import { useMemo, useRef, type CSSProperties } from 'react'
+import { useMemo, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import type { BibleBook, TranslationCode } from '@/types/bible'
 import type { StudyHighlight } from '@/types/content'
 import { buildSegments, parseVerseTokens, type HighlightRange } from '@/utils/studyText'
 import { buildPassageRoute } from '@/utils/passage'
-import { getSelectionOffsets } from '@/utils/textSelection'
+import { markProps } from '@/components/shared/marks'
 import styles from './StudyParagraph.module.css'
 
 interface StudyParagraphProps {
-  paragraphIndex: number
+  unitKey: string
+  unitOrder: number
   rawText: string
   books: BibleBook[]
   translation: TranslationCode
   highlights: StudyHighlight[]
-  canHighlight: boolean
-  onSelect: (paragraphIndex: number, start: number, end: number) => void
-  onRemoveHighlight: (id: string) => void
 }
 
-export function StudyParagraph({
-  paragraphIndex,
-  rawText,
-  books,
-  translation,
-  highlights,
-  canHighlight,
-  onSelect,
-  onRemoveHighlight,
-}: StudyParagraphProps) {
-  const ref = useRef<HTMLParagraphElement>(null)
-
+export function StudyParagraph({ unitKey, unitOrder, rawText, books, translation, highlights }: StudyParagraphProps) {
   const { display, tokens } = useMemo(() => parseVerseTokens(rawText, books), [rawText, books])
 
-  const highlightRanges: HighlightRange[] = useMemo(
-    () => highlights.map((h) => ({ id: h.id, start: h.start, end: h.end, color: h.color, style: h.style })),
-    [highlights],
-  )
-
-  const segments = useMemo(() => buildSegments(display, tokens, highlightRanges), [display, tokens, highlightRanges])
-
-  function handleSelectionEnd() {
-    if (!canHighlight || !ref.current) return
-    const offsets = getSelectionOffsets(ref.current)
-    if (!offsets) return
-    onSelect(paragraphIndex, offsets.start, offsets.end)
-  }
+  const segments = useMemo(() => {
+    const ranges: HighlightRange[] = highlights.map((h) => ({ id: h.id, start: h.start, end: h.end, color: h.color, style: h.style }))
+    return buildSegments(display, tokens, ranges)
+  }, [display, tokens, highlights])
 
   return (
-    <p ref={ref} className={styles.paragraph} onMouseUp={handleSelectionEnd} onTouchEnd={handleSelectionEnd}>
+    <p className={styles.paragraph} data-unit-key={unitKey} data-unit-order={unitOrder} data-unit-text>
       {segments.map((seg, i) => {
-        let node = <span>{seg.text}</span>
-
-        if (seg.highlight) {
-          const isCircle = seg.highlight.style === 'circle'
-          const style: CSSProperties = isCircle
-            ? ({ '--circle-color': `var(--highlight-${seg.highlight.color})` } as CSSProperties)
-            : { background: `var(--highlight-${seg.highlight.color})` }
-          node = (
-            <mark
-              className={isCircle ? styles.circleMark : styles.fillMark}
-              style={style}
-              onClick={(e) => {
-                e.stopPropagation()
-                onRemoveHighlight(seg.highlight!.id)
-              }}
-            >
-              {node}
-            </mark>
-          )
-        }
-
+        let node: ReactNode = seg.text
         if (seg.token) {
           node = (
             <Link to={buildPassageRoute(seg.token.ref, translation)} className={styles.verseLink}>
@@ -77,7 +35,9 @@ export function StudyParagraph({
             </Link>
           )
         }
-
+        if (seg.highlight) {
+          node = <mark {...markProps(seg.highlight.color, seg.highlight.style)}>{node}</mark>
+        }
         return <span key={i}>{node}</span>
       })}
     </p>

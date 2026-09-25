@@ -41,3 +41,25 @@ img {
 ::selection {
   background: var(--highlight-amarillo);
 }
+
+/* Live preview while dragging the marker (see MarkerLayer). Literal colors on purpose:
+   custom properties inside ::highlight() aren't resolved consistently across browsers. */
+::highlight(marker-amarillo) {
+  background-color: rgba(255, 224, 138, 0.85);
+}
+::highlight(marker-verde) {
+  background-color: rgba(183, 228, 176, 0.85);
+}
+::highlight(marker-celeste) {
+  background-color: rgba(169, 216, 239, 0.85);
+}
+::highlight(marker-rosa) {
+  background-color: rgba(243, 182, 201, 0.85);
+}
+::highlight(marker-lila) {
+  background-color: rgba(205, 184, 236, 0.85);
+}
+::highlight(marker-erase) {
+  background-color: rgba(42, 26, 18, 0.18);
+  text-decoration: line-through;
+}

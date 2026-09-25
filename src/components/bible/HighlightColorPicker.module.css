@@ -50,11 +50,9 @@
   border-width: 3px;
 }
 
+/* Ring drawn outside the swatch so it shows on the dark toolbar and keeps the swatch's color. */
 .selected {
-  border-color: var(--color-ink-900);
-}
-
-.swatchOutline.selected {
-  border-color: var(--color-white);
-  outline: 2px solid var(--color-ink-900);
+  box-shadow:
+    0 0 0 2px var(--color-ink-900),
+    0 0 0 4px var(--color-white);
 }

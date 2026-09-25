@@ -1,0 +1,74 @@
+.fab {
+  position: fixed;
+  right: var(--space-4);
+  bottom: calc(var(--nav-height) + var(--space-4));
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-flame-600);
+  color: var(--color-white);
+  font-size: 22px;
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 40;
+}
+
+.bar {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(var(--nav-height) + var(--space-2));
+  width: min(640px, calc(100% - 2 * var(--space-4)));
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--color-ink-900);
+  color: var(--color-white);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  z-index: 40;
+}
+
+.hint {
+  width: 100%;
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.75;
+}
+
+.eraser {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--color-white);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.eraserActive {
+  background: var(--color-white);
+  color: var(--color-ink-900);
+}
+
+.done {
+  margin-left: auto;
+  border: none;
+  border-radius: 999px;
+  background: var(--color-flame-500);
+  color: var(--color-white);
+  font-weight: 700;
+  font-size: 14px;
+  padding: 6px 18px;
+  cursor: pointer;
+}

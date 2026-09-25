@@ -1,7 +1,7 @@
-import { useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { memo, useMemo, useState, type ReactNode } from 'react'
 import type { VerseHighlight } from '@/types/bible'
 import { buildSegments, type HighlightRange } from '@/utils/studyText'
-import { getSelectionOffsets } from '@/utils/textSelection'
+import { markProps } from '@/components/shared/marks'
 import { Icon } from '@/components/ui/Icon'
 import styles from './Verse.module.css'
 
@@ -10,14 +10,16 @@ interface VerseProps {
   html: string
   highlights: VerseHighlight[]
   note?: string
-  onOpenNote: () => void
-  onSelect: (verse: number, start: number, end: number, text: string) => void
-  onRemoveHighlight: (id: string) => void
+  onOpenNote: (verse: number) => void
   onLookupWord: (word: string) => void
 }
 
 function toPlainText(html: string): string {
   return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+}
+
+function cleanWord(word: string) {
+  return word.replace(/[.,;:!?"'()«»“”—]/g, '')
 }
 
 function renderWords(text: string, onLookupWord: (word: string) => void): ReactNode {
@@ -27,14 +29,12 @@ function renderWords(text: string, onLookupWord: (word: string) => void): ReactN
       <span
         key={i}
         className={styles.word}
+        onClick={() => onLookupWord(cleanWord(chunk))}
         onContextMenu={(e) => {
-          // button === 2 means an actual mouse right-click. On touchscreens, a long-press also
-          // fires contextmenu (button 0) — that gesture must stay free to extend the native
-          // selection into a full phrase, so we only hijack the real right-click here.
+          // Only a real mouse right-click; a touch long-press also fires contextmenu (button 0).
           if (e.button !== 2) return
           e.preventDefault()
-          e.stopPropagation()
-          onLookupWord(chunk.replace(/[.,;:!?"'()]/g, ''))
+          onLookupWord(cleanWord(chunk))
         }}
       >
         {chunk}
@@ -43,82 +43,60 @@ function renderWords(text: string, onLookupWord: (word: string) => void): ReactN
   })
 }
 
-export function Verse({ number, html, highlights, note, onOpenNote, onSelect, onRemoveHighlight, onLookupWord }: VerseProps) {
+function VerseComponent({ number, html, highlights, note, onOpenNote, onLookupWord }: VerseProps) {
   const [noteOpen, setNoteOpen] = useState(false)
-  const textRef = useRef<HTMLSpanElement>(null)
 
   const display = useMemo(() => toPlainText(html), [html])
-  const highlightRanges: HighlightRange[] = useMemo(
-    () => highlights.map((h) => ({ id: h.id, start: h.start, end: h.end, color: h.color, style: h.style })),
-    [highlights],
-  )
-  const segments = useMemo(() => buildSegments(display, [], highlightRanges), [display, highlightRanges])
-
-  function handleSelectionEnd() {
-    if (!textRef.current) return
-    const offsets = getSelectionOffsets(textRef.current)
-    if (!offsets) return
-    onSelect(number, offsets.start, offsets.end, display.slice(offsets.start, offsets.end))
-  }
+  const segments = useMemo(() => {
+    const ranges: HighlightRange[] = highlights.map((h) => ({ id: h.id, start: h.start, end: h.end, color: h.color, style: h.style }))
+    return buildSegments(display, [], ranges)
+  }, [display, highlights])
 
   return (
-    <p id={`verse-${number}`} className={styles.verse} onMouseUp={handleSelectionEnd} onTouchEnd={handleSelectionEnd}>
-      <button
-        type="button"
-        className={styles.number}
-        onClick={(e) => {
-          e.stopPropagation()
-          onOpenNote()
-        }}
-        aria-label={`Nota del versículo ${number}`}
-      >
+    <p id={`verse-${number}`} className={styles.verse} data-unit-key={String(number)} data-unit-order={number}>
+      <button type="button" className={styles.number} onClick={() => onOpenNote(number)} aria-label={`Nota del versículo ${number}`}>
         {number}
       </button>
-      <span ref={textRef}>
-        {segments.map((seg, i) => {
-          if (!seg.highlight) return <span key={i}>{renderWords(seg.text, onLookupWord)}</span>
-
-          const isCircle = seg.highlight.style === 'circle'
-          const markStyle: CSSProperties = isCircle
-            ? ({ '--circle-color': `var(--highlight-${seg.highlight.color})` } as CSSProperties)
-            : { background: `var(--highlight-${seg.highlight.color})` }
-
-          return (
-            <mark
-              key={i}
-              className={isCircle ? styles.circleMark : styles.fillMark}
-              style={markStyle}
-              title="Tocá para quitar el resaltado"
-              onClick={(e) => {
-                e.stopPropagation()
-                onRemoveHighlight(seg.highlight!.id)
-              }}
-            >
+      <span data-unit-text>
+        {segments.map((seg, i) =>
+          seg.highlight ? (
+            <mark key={i} {...markProps(seg.highlight.color, seg.highlight.style)}>
               {renderWords(seg.text, onLookupWord)}
             </mark>
-          )
-        })}
+          ) : (
+            <span key={i}>{renderWords(seg.text, onLookupWord)}</span>
+          ),
+        )}
       </span>
       {note && (
         <span className={styles.noteWrap}>
           <button
             type="button"
             className={`${styles.noteBadge} ${noteOpen ? styles.noteBadgeActive : ''}`}
-            onClick={(e) => {
-              e.stopPropagation()
-              setNoteOpen((o) => !o)
-            }}
+            onClick={() => setNoteOpen((o) => !o)}
             aria-label="Ver nota"
           >
             <Icon name="flag-fill" />
           </button>
-          {noteOpen && (
-            <span className={styles.notePopover} onClick={(e) => e.stopPropagation()}>
-              {note}
-            </span>
-          )}
+          {noteOpen && <span className={styles.notePopover}>{note}</span>}
         </span>
       )}
     </p>
   )
 }
+
+// Highlight objects keep their identity across strokes, so an element-wise comparison lets a
+// stroke re-render only the verses it actually touched.
+function sameProps(a: VerseProps, b: VerseProps) {
+  return (
+    a.number === b.number &&
+    a.html === b.html &&
+    a.note === b.note &&
+    a.onOpenNote === b.onOpenNote &&
+    a.onLookupWord === b.onLookupWord &&
+    a.highlights.length === b.highlights.length &&
+    a.highlights.every((h, i) => h === b.highlights[i])
+  )
+}
+
+export const Verse = memo(VerseComponent, sameProps)

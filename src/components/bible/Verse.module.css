@@ -7,20 +7,6 @@
   transition: background 0.15s ease;
 }
 
-.fillMark {
-  background: var(--highlight-amarillo);
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-  padding: 1px 6px;
-  cursor: pointer;
-}
-
-.circleMark {
-  border: 2px solid var(--circle-color, var(--color-flame-500));
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-  padding: 0 6px;
-  cursor: pointer;
-}
-
 .number {
   border: none;
   background: none;

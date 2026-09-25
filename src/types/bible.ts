@@ -28,7 +28,7 @@ export interface DictionaryEntry {
 }
 
 export type HighlightColor = 'amarillo' | 'verde' | 'celeste' | 'rosa' | 'lila'
-export type HighlightStyle = 'fill' | 'circle'
+export type HighlightStyle = 'fill' | 'pencil'
 
 export interface VerseHighlight {
   id: string

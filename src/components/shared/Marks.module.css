@@ -1,0 +1,30 @@
+/* Both styles are drawn without changing text layout: the marker's horizontal padding is
+   cancelled by an equal negative margin, and the pencil is a text decoration. */
+
+.fill {
+  color: inherit;
+  background: linear-gradient(
+    102deg,
+    transparent 0,
+    var(--mark-color) 0.3em,
+    var(--mark-color) calc(100% - 0.3em),
+    transparent 100%
+  );
+  border-radius: 0.4em 0.15em 0.45em 0.2em;
+  margin: 0 -0.2em;
+  padding: 0.05em 0.2em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+.pencil {
+  color: inherit;
+  background: none;
+  text-decoration-line: underline;
+  text-decoration-style: wavy;
+  text-decoration-color: #8a6a4a;
+  text-decoration-color: color-mix(in srgb, var(--mark-color) 45%, #4a2c12);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 0.28em;
+  text-decoration-skip-ink: none;
+}

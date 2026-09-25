@@ -1,6 +1,6 @@
-import { collection, deleteDoc, doc, getDocs, query, serverTimestamp, setDoc, where } from 'firebase/firestore'
+import { collection, doc, getDocs, query, serverTimestamp, setDoc, where, writeBatch } from 'firebase/firestore'
 import { db } from '@/firebase/config'
-import type { HighlightColor, HighlightStyle, TranslationCode, VerseHighlight, VerseNote } from '@/types/bible'
+import type { TranslationCode, VerseHighlight, VerseNote } from '@/types/bible'
 
 function highlightsRef(uid: string) {
   return collection(db, 'users', uid, 'highlights')
@@ -10,7 +10,7 @@ function notesRef(uid: string) {
   return collection(db, 'users', uid, 'verseNotes')
 }
 
-function highlightId(translation: TranslationCode, book: number, chapter: number, verse: number, start: number, end: number) {
+export function verseHighlightId(translation: TranslationCode, book: number, chapter: number, verse: number, start: number, end: number) {
   return `${translation}_${book}_${chapter}_${verse}_${start}_${end}`
 }
 
@@ -31,37 +31,20 @@ export async function getChapterHighlights(
     where('chapter', '==', chapter),
   )
   const snap = await getDocs(q)
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as VerseHighlight)
+  return snap.docs
+    .map((d) => ({ id: d.id, ...d.data() }) as VerseHighlight)
+    .filter((h) => typeof h.start === 'number' && typeof h.end === 'number' && !!h.color)
 }
 
-export async function addVerseHighlight(
-  uid: string,
-  translation: TranslationCode,
-  book: number,
-  chapter: number,
-  verse: number,
-  start: number,
-  end: number,
-  color: HighlightColor,
-  style: HighlightStyle,
-): Promise<VerseHighlight> {
-  const id = highlightId(translation, book, chapter, verse, start, end)
-  await setDoc(doc(highlightsRef(uid), id), {
-    translation,
-    book,
-    chapter,
-    verse,
-    start,
-    end,
-    color,
-    style,
-    updatedAt: serverTimestamp(),
-  })
-  return { id, translation, book, chapter, verse, start, end, color, style, updatedAt: Date.now() }
-}
-
-export async function removeVerseHighlight(uid: string, id: string) {
-  await deleteDoc(doc(highlightsRef(uid), id))
+/** Applies a stroke's removals and additions in one atomic write. */
+export async function commitVerseHighlights(uid: string, removeIds: string[], add: VerseHighlight[]) {
+  const batch = writeBatch(db)
+  for (const id of removeIds) batch.delete(doc(highlightsRef(uid), id))
+  for (const h of add) {
+    const { id, ...data } = h
+    batch.set(doc(highlightsRef(uid), id), { ...data, updatedAt: serverTimestamp() })
+  }
+  await batch.commit()
 }
 
 export async function getChapterNotes(

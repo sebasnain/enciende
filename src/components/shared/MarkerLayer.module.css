@@ -1,0 +1,9 @@
+.active {
+  touch-action: none;
+  -webkit-touch-callout: none;
+  cursor: crosshair;
+}
+
+.active * {
+  cursor: crosshair;
+}
