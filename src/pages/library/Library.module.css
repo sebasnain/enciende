@@ -77,6 +77,28 @@
   box-shadow: var(--shadow-sm);
 }
 
+.statusBadge {
+  position: absolute;
+  right: var(--space-2);
+  top: var(--space-2);
+  color: var(--color-white);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 999px;
+  box-shadow: var(--shadow-sm);
+}
+
+.statusStock {
+  background: var(--color-success);
+}
+
+.statusPreventa {
+  background: #d1801f;
+}
+
 .body {
   padding: var(--space-3);
   display: flex;

@@ -1,9 +1,11 @@
 export const PRODUCT_CATEGORIES = ['Biblias', 'Niños', 'Estudio bíblico', 'Biografías', 'Devocionales', 'Regalería'] as const
+export const PRODUCT_STATUSES = ['En stock', 'Preventa'] as const
 
 export interface Product {
   id: string
   name: string
   category: string
+  status: string
   price: number
   originalPrice: number | null
   imageURL: string

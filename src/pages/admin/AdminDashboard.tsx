@@ -4,7 +4,7 @@ import { devotionalsService, studiesService } from '@/services/content.service'
 import { createEvent, deleteEvent, listUpcomingEvents, updateEvent } from '@/services/events.service'
 import { createProduct, deleteProduct, listProducts, updateProduct } from '@/services/products.service'
 import { createPlan, deletePlan, listPublishedPlans, updatePlan } from '@/services/plans.service'
-import { PRODUCT_CATEGORIES } from '@/types/products'
+import { PRODUCT_CATEGORIES, PRODUCT_STATUSES } from '@/types/products'
 import { useAuth } from '@/context/AuthContext'
 import { PlanDaysEditor } from './PlanDaysEditor'
 import { LiveSettingsEditor } from './LiveSettingsEditor'
@@ -46,6 +46,7 @@ const eventFields: AdminField[] = [
 const productFields: AdminField[] = [
   { key: 'name', label: 'Nombre', type: 'text' },
   { key: 'category', label: 'Categoría', type: 'select', options: [...PRODUCT_CATEGORIES] },
+  { key: 'status', label: 'Disponibilidad', type: 'select', options: [...PRODUCT_STATUSES] },
   { key: 'originalPrice', label: 'Precio anterior (opcional, sale tachado)', type: 'number' },
   { key: 'price', label: 'Precio', type: 'number' },
   { key: 'imageURL', label: 'Imagen (URL)', type: 'text' },
@@ -126,7 +127,7 @@ export function AdminDashboard() {
         <AdminCrudPage
           title="Productos"
           fields={productFields}
-          defaults={{ name: '', category: PRODUCT_CATEGORIES[0], originalPrice: '', price: '', imageURL: '', description: '', available: true }}
+          defaults={{ name: '', category: PRODUCT_CATEGORIES[0], status: PRODUCT_STATUSES[0], originalPrice: '', price: '', imageURL: '', description: '', available: true }}
           service={{ list: listProducts, create: createProduct, update: updateProduct, remove: deleteProduct }}
           labelOf={(item) => item.name}
         />

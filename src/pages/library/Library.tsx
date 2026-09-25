@@ -87,6 +87,7 @@ export function Library() {
             {visibleProducts.map((product) => {
               const inCart = cart.items.includes(product.id)
               const hasDiscount = !!product.originalPrice && product.originalPrice > product.price
+              const status = product.status || 'En stock'
               return (
                 <div
                   key={product.id}
@@ -96,6 +97,9 @@ export function Library() {
                   <div className={styles.imageWrap}>
                     <img src={product.imageURL} alt={product.name} className={styles.image} />
                     {product.category && <span className={styles.categoryBadge}>{product.category}</span>}
+                    <span className={`${styles.statusBadge} ${status === 'Preventa' ? styles.statusPreventa : styles.statusStock}`}>
+                      {status}
+                    </span>
                   </div>
                   <div className={styles.body}>
                     <p className={styles.name}>{product.name}</p>
