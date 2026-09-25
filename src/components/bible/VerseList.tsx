@@ -9,10 +9,9 @@ interface VerseListProps {
   highlights: VerseHighlight[]
   notes: Record<number, string>
   onOpenNote: (verse: number) => void
-  onLookupWord: (word: string) => void
 }
 
-export function VerseList({ verses, highlights, notes, onOpenNote, onLookupWord }: VerseListProps) {
+export function VerseList({ verses, highlights, notes, onOpenNote }: VerseListProps) {
   const byVerse = useMemo(() => {
     const map = new Map<number, VerseHighlight[]>()
     for (const h of highlights) {
@@ -33,7 +32,6 @@ export function VerseList({ verses, highlights, notes, onOpenNote, onLookupWord 
           highlights={byVerse.get(verse.verse) ?? NONE}
           note={notes[verse.verse]}
           onOpenNote={onOpenNote}
-          onLookupWord={onLookupWord}
         />
       ))}
     </div>

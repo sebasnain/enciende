@@ -1,4 +1,4 @@
-import { memo, useMemo, useState, type ReactNode } from 'react'
+import { memo, useMemo, useState } from 'react'
 import type { VerseHighlight } from '@/types/bible'
 import { buildSegments, type HighlightRange } from '@/utils/studyText'
 import { markProps } from '@/components/shared/marks'
@@ -11,39 +11,13 @@ interface VerseProps {
   highlights: VerseHighlight[]
   note?: string
   onOpenNote: (verse: number) => void
-  onLookupWord: (word: string) => void
 }
 
 function toPlainText(html: string): string {
   return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
 }
 
-function cleanWord(word: string) {
-  return word.replace(/[.,;:!?"'()«»“”—]/g, '')
-}
-
-function renderWords(text: string, onLookupWord: (word: string) => void): ReactNode {
-  return text.split(/(\s+)/).map((chunk, i) => {
-    if (chunk === '' || /^\s+$/.test(chunk)) return chunk
-    return (
-      <span
-        key={i}
-        className={styles.word}
-        onClick={() => onLookupWord(cleanWord(chunk))}
-        onContextMenu={(e) => {
-          // Only a real mouse right-click; a touch long-press also fires contextmenu (button 0).
-          if (e.button !== 2) return
-          e.preventDefault()
-          onLookupWord(cleanWord(chunk))
-        }}
-      >
-        {chunk}
-      </span>
-    )
-  })
-}
-
-function VerseComponent({ number, html, highlights, note, onOpenNote, onLookupWord }: VerseProps) {
+function VerseComponent({ number, html, highlights, note, onOpenNote }: VerseProps) {
   const [noteOpen, setNoteOpen] = useState(false)
 
   const display = useMemo(() => toPlainText(html), [html])
@@ -61,10 +35,10 @@ function VerseComponent({ number, html, highlights, note, onOpenNote, onLookupWo
         {segments.map((seg, i) =>
           seg.highlight ? (
             <mark key={i} {...markProps(seg.highlight.color, seg.highlight.style)}>
-              {renderWords(seg.text, onLookupWord)}
+              {seg.text}
             </mark>
           ) : (
-            <span key={i}>{renderWords(seg.text, onLookupWord)}</span>
+            <span key={i}>{seg.text}</span>
           ),
         )}
       </span>
@@ -93,7 +67,6 @@ function sameProps(a: VerseProps, b: VerseProps) {
     a.html === b.html &&
     a.note === b.note &&
     a.onOpenNote === b.onOpenNote &&
-    a.onLookupWord === b.onLookupWord &&
     a.highlights.length === b.highlights.length &&
     a.highlights.every((h, i) => h === b.highlights[i])
   )

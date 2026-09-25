@@ -9,7 +9,6 @@ import { VersionSwitcher } from '@/components/bible/VersionSwitcher'
 import { ChapterNavigator } from '@/components/bible/ChapterNavigator'
 import { VerseList } from '@/components/bible/VerseList'
 import { NoteEditorModal } from '@/components/bible/NoteEditorModal'
-import { DictionaryPopover } from '@/components/bible/DictionaryPopover'
 import { MarkerLayer, type MarkedRange } from '@/components/shared/MarkerLayer'
 import { DEFAULT_MARKER_TOOL, MarkerToolbar, paintToolOf, previewNameOf } from '@/components/shared/MarkerToolbar'
 import { Spinner } from '@/components/ui/Spinner'
@@ -36,7 +35,6 @@ export function BibleReader() {
   const [markerActive, setMarkerActive] = useState(false)
   const [tool, setTool] = useState(DEFAULT_MARKER_TOOL)
   const [noteVerse, setNoteVerse] = useState<number | null>(null)
-  const [dictionaryWord, setDictionaryWord] = useState<string | null>(null)
 
   useEffect(() => {
     if (loading || !targetVerse) return
@@ -77,7 +75,7 @@ export function BibleReader() {
 
       {!loading && !error && (
         <MarkerLayer active={markerActive} previewName={previewNameOf(tool)} onPaint={handlePaint}>
-          <VerseList verses={verses} highlights={highlights} notes={notes} onOpenNote={setNoteVerse} onLookupWord={setDictionaryWord} />
+          <VerseList verses={verses} highlights={highlights} notes={notes} onOpenNote={setNoteVerse} />
         </MarkerLayer>
       )}
 
@@ -91,8 +89,6 @@ export function BibleReader() {
           onClose={() => setNoteVerse(null)}
         />
       )}
-
-      {dictionaryWord && <DictionaryPopover word={dictionaryWord} onClose={() => setDictionaryWord(null)} />}
     </div>
   )
 }

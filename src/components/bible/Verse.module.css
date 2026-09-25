@@ -18,14 +18,6 @@
   padding: 0 2px 0 0;
 }
 
-.word {
-  cursor: pointer;
-}
-
-.word:hover {
-  text-decoration: underline dotted;
-}
-
 .noteWrap {
   position: relative;
   display: inline-block;

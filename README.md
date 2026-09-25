@@ -2,7 +2,7 @@
 
 Tu espacio digital para conectar con la familia de la fe y crecer en tu caminata diaria con Dios.
 
-PWA comunitaria con lectura bíblica interactiva (subrayado, notas y diccionario vía [Bolls.life](https://bolls.life)), planes de lectura con racha, devocionales, estudios, cronograma de actividades, transmisión en vivo por YouTube y librería institucional.
+PWA comunitaria con lectura bíblica interactiva (texto vía [Bolls.life](https://bolls.life), resaltado y notas), planes de lectura con racha, devocionales, estudios, cronograma de actividades, transmisión en vivo por YouTube y librería institucional.
 
 ## Stack
 

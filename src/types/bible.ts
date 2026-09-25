@@ -20,13 +20,6 @@ export interface CachedTranslation {
   downloadedAt: number
 }
 
-export interface DictionaryEntry {
-  topic: string
-  definition: string
-  lexeme?: string
-  transliteration?: string
-}
-
 export type HighlightColor = 'amarillo' | 'verde' | 'celeste' | 'rosa' | 'lila'
 export type HighlightStyle = 'fill' | 'pencil'
 

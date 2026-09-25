@@ -172,7 +172,7 @@ export function MarkerLayer({ active, previewName, onPaint, children }: MarkerLa
     if (ranges.length > 0) onPaint(ranges)
   }
 
-  // While painting, taps must not follow links, open notes or the dictionary.
+  // While painting, taps must not follow links or open notes.
   function swallow(e: SyntheticEvent) {
     e.preventDefault()
     e.stopPropagation()
