@@ -7,6 +7,7 @@ import { createPlan, deletePlan, listPublishedPlans, updatePlan } from '@/servic
 import { PRODUCT_CATEGORIES, PRODUCT_STATUSES } from '@/types/products'
 import { useAuth } from '@/context/AuthContext'
 import { PlanDaysEditor } from './PlanDaysEditor'
+import { LessonsEditor } from './LessonsEditor'
 import { LiveSettingsEditor } from './LiveSettingsEditor'
 import styles from './AdminDashboard.module.css'
 
@@ -88,6 +89,18 @@ export function AdminDashboard() {
           defaults={{ title: '', series: '', body: '', coverImage: '', authorId: profile?.uid, authorName: profile?.displayName }}
           service={studiesService}
           labelOf={(item) => item.title}
+          keepEditingAfterCreate
+          renderAfterField={(key, { editingId }) =>
+            key === 'body' ? (
+              editingId ? (
+                <LessonsEditor studyId={editingId} />
+              ) : (
+                <p style={{ color: 'var(--color-ink-400)', fontSize: 13, margin: '4px 0 0' }}>
+                  Creá el estudio para poder agregarle lecciones.
+                </p>
+              )
+            ) : null
+          }
         />
       )}
 

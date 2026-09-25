@@ -1,0 +1,28 @@
+.paragraph {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--color-ink-900);
+  margin-bottom: var(--space-4);
+  user-select: text;
+}
+
+.fillMark {
+  background: var(--highlight-amarillo);
+  border-radius: 3px;
+  padding: 0 1px;
+  cursor: pointer;
+}
+
+.circleMark {
+  border: 2px solid var(--circle-color, var(--color-flame-500));
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  padding: 0 6px;
+  cursor: pointer;
+  filter: url(#pencil-wobble);
+}
+
+.verseLink {
+  color: var(--color-flame-600);
+  font-weight: 700;
+  text-decoration: underline;
+}
