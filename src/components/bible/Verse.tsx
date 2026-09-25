@@ -28,6 +28,10 @@ function renderWords(text: string, onLookupWord: (word: string) => void): ReactN
         key={i}
         className={styles.word}
         onContextMenu={(e) => {
+          // button === 2 means an actual mouse right-click. On touchscreens, a long-press also
+          // fires contextmenu (button 0) — that gesture must stay free to extend the native
+          // selection into a full phrase, so we only hijack the real right-click here.
+          if (e.button !== 2) return
           e.preventDefault()
           e.stopPropagation()
           onLookupWord(chunk.replace(/[.,;:!?"'()]/g, ''))
