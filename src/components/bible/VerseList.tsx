@@ -5,13 +5,13 @@ interface VerseListProps {
   verses: BibleVerse[]
   highlights: VerseHighlight[]
   notes: Record<number, string>
-  onSelect: (verse: number, start: number, end: number) => void
+  onSelect: (verse: number, start: number, end: number, text: string) => void
   onRemoveHighlight: (id: string) => void
   onOpenNote: (verse: number) => void
-  onSelectWord: (word: string) => void
+  onLookupWord: (word: string) => void
 }
 
-export function VerseList({ verses, highlights, notes, onSelect, onRemoveHighlight, onOpenNote, onSelectWord }: VerseListProps) {
+export function VerseList({ verses, highlights, notes, onSelect, onRemoveHighlight, onOpenNote, onLookupWord }: VerseListProps) {
   return (
     <div>
       {verses.map((verse) => (
@@ -24,7 +24,7 @@ export function VerseList({ verses, highlights, notes, onSelect, onRemoveHighlig
           onOpenNote={() => onOpenNote(verse.verse)}
           onSelect={onSelect}
           onRemoveHighlight={onRemoveHighlight}
-          onSelectWord={onSelectWord}
+          onLookupWord={onLookupWord}
         />
       ))}
     </div>

@@ -19,6 +19,20 @@
   white-space: nowrap;
 }
 
+.dictionaryButton {
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
+  color: var(--color-white);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+}
+
 .closeButton {
   position: absolute;
   top: var(--space-2);

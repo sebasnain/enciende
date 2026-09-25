@@ -20,6 +20,7 @@ interface PendingSelection {
   verse: number
   start: number
   end: number
+  text: string
 }
 
 export function BibleReader() {
@@ -84,14 +85,21 @@ export function BibleReader() {
           verses={verses}
           highlights={highlights}
           notes={notes}
-          onSelect={(verse, start, end) => setPendingSelection({ verse, start, end })}
+          onSelect={(verse, start, end, text) => setPendingSelection({ verse, start, end, text })}
           onRemoveHighlight={removeHighlight}
           onOpenNote={setNoteVerse}
-          onSelectWord={(word) => setDictionaryWord(word)}
+          onLookupWord={(word) => setDictionaryWord(word)}
         />
       )}
 
-      {pendingSelection && <TextSelectionBar onPick={handlePick} onClose={() => setPendingSelection(null)} />}
+      {pendingSelection && (
+        <TextSelectionBar
+          selectedText={pendingSelection.text}
+          onPick={handlePick}
+          onClose={() => setPendingSelection(null)}
+          onLookupWord={(word) => setDictionaryWord(word)}
+        />
+      )}
 
       {noteVerse !== null && (
         <NoteEditorModal

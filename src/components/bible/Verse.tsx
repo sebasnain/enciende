@@ -11,26 +11,26 @@ interface VerseProps {
   highlights: VerseHighlight[]
   note?: string
   onOpenNote: () => void
-  onSelect: (verse: number, start: number, end: number) => void
+  onSelect: (verse: number, start: number, end: number, text: string) => void
   onRemoveHighlight: (id: string) => void
-  onSelectWord: (word: string) => void
+  onLookupWord: (word: string) => void
 }
 
 function toPlainText(html: string): string {
   return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
 }
 
-function renderWords(text: string, onSelectWord?: (word: string) => void): ReactNode {
-  if (!onSelectWord) return text
+function renderWords(text: string, onLookupWord: (word: string) => void): ReactNode {
   return text.split(/(\s+)/).map((chunk, i) => {
     if (chunk === '' || /^\s+$/.test(chunk)) return chunk
     return (
       <span
         key={i}
         className={styles.word}
-        onClick={(e) => {
+        onContextMenu={(e) => {
+          e.preventDefault()
           e.stopPropagation()
-          onSelectWord(chunk.replace(/[.,;:!?"'()]/g, ''))
+          onLookupWord(chunk.replace(/[.,;:!?"'()]/g, ''))
         }}
       >
         {chunk}
@@ -39,7 +39,7 @@ function renderWords(text: string, onSelectWord?: (word: string) => void): React
   })
 }
 
-export function Verse({ number, html, highlights, note, onOpenNote, onSelect, onRemoveHighlight, onSelectWord }: VerseProps) {
+export function Verse({ number, html, highlights, note, onOpenNote, onSelect, onRemoveHighlight, onLookupWord }: VerseProps) {
   const [noteOpen, setNoteOpen] = useState(false)
   const textRef = useRef<HTMLSpanElement>(null)
 
@@ -54,7 +54,7 @@ export function Verse({ number, html, highlights, note, onOpenNote, onSelect, on
     if (!textRef.current) return
     const offsets = getSelectionOffsets(textRef.current)
     if (!offsets) return
-    onSelect(number, offsets.start, offsets.end)
+    onSelect(number, offsets.start, offsets.end, display.slice(offsets.start, offsets.end))
   }
 
   return (
@@ -72,7 +72,7 @@ export function Verse({ number, html, highlights, note, onOpenNote, onSelect, on
       </button>
       <span ref={textRef}>
         {segments.map((seg, i) => {
-          if (!seg.highlight) return <span key={i}>{renderWords(seg.text, onSelectWord)}</span>
+          if (!seg.highlight) return <span key={i}>{renderWords(seg.text, onLookupWord)}</span>
 
           const isCircle = seg.highlight.style === 'circle'
           const markStyle: CSSProperties = isCircle
@@ -90,7 +90,7 @@ export function Verse({ number, html, highlights, note, onOpenNote, onSelect, on
                 onRemoveHighlight(seg.highlight!.id)
               }}
             >
-              {renderWords(seg.text)}
+              {renderWords(seg.text, onLookupWord)}
             </mark>
           )
         })}
