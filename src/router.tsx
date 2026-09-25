@@ -6,6 +6,7 @@ import { Home } from '@/pages/Home'
 import { Welcome } from '@/pages/auth/Welcome'
 import { Login } from '@/pages/auth/Login'
 import { Register } from '@/pages/auth/Register'
+import { ForgotPassword } from '@/pages/auth/ForgotPassword'
 import { BibleIndexRedirect } from '@/pages/bible/BibleIndexRedirect'
 import { BibleReader } from '@/pages/bible/BibleReader'
 import { PlanList } from '@/pages/plans/PlanList'
@@ -27,6 +28,7 @@ export const router = createBrowserRouter([
       { path: '/', element: <Home /> },
       { path: '/login', element: <Login /> },
       { path: '/register', element: <Register /> },
+      { path: '/recuperar', element: <ForgotPassword /> },
       { path: '/biblia', element: <BibleIndexRedirect /> },
       { path: '/biblia/:translation/:bookId/:chapter', element: <BibleReader /> },
       { path: '/planes', element: <PlanList /> },

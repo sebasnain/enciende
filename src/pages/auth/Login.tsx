@@ -45,6 +45,9 @@ export function Login() {
         onChange={(e) => setPassword(e.target.value)}
         required
       />
+      <Link to="/recuperar" state={{ email }} className={styles.forgot}>
+        ¿Olvidaste tu contraseña?
+      </Link>
       {error && <p className={styles.error}>{error}</p>}
       <Button type="submit" disabled={loading}>
         {loading ? 'Ingresando…' : 'Ingresar'}

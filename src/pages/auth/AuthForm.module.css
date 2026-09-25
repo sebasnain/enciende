@@ -27,6 +27,20 @@
   font-size: 13px;
 }
 
+.info {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-ink-700);
+  text-align: center;
+}
+
+.forgot {
+  align-self: flex-end;
+  font-size: 13px;
+  color: var(--color-flame-600);
+  margin-top: calc(-1 * var(--space-1));
+}
+
 .switch {
   text-align: center;
   font-size: 14px;
