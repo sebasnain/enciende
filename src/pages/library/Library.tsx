@@ -100,6 +100,11 @@ export function Library() {
                     <span className={`${styles.statusBadge} ${status === 'Preventa' ? styles.statusPreventa : styles.statusStock}`}>
                       {status}
                     </span>
+                    {product.description && (
+                      <div className={styles.descriptionOverlay}>
+                        <p>{product.description}</p>
+                      </div>
+                    )}
                   </div>
                   <div className={styles.body}>
                     <p className={styles.name}>{product.name}</p>
