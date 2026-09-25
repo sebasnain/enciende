@@ -6,14 +6,50 @@ import styles from '@/components/admin/AdminCrudPage.module.css'
 
 const DAYS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
 
+type SaveState = 'idle' | 'saving' | 'saved' | 'error'
+
+function saveLabel(state: SaveState, idleLabel: string) {
+  if (state === 'saving') return 'Guardando…'
+  if (state === 'saved') return '✓ Guardado'
+  if (state === 'error') return 'Error al guardar'
+  return idleLabel
+}
+
 export function LiveSettingsEditor() {
   const [live, setLive] = useState<LiveSettings | null>(null)
   const [social, setSocial] = useState<Partial<SocialSettings>>({})
+  const [liveSaveState, setLiveSaveState] = useState<SaveState>('idle')
+  const [socialSaveState, setSocialSaveState] = useState<SaveState>('idle')
 
   useEffect(() => {
     getLiveSettings().then(setLive)
     getSocialSettings().then((s) => setSocial(s ?? {}))
   }, [])
+
+  async function handleSaveLive() {
+    if (!live) return
+    setLiveSaveState('saving')
+    try {
+      await setLiveSettings(live)
+      setLiveSaveState('saved')
+    } catch {
+      setLiveSaveState('error')
+    } finally {
+      setTimeout(() => setLiveSaveState('idle'), 2500)
+    }
+  }
+
+  async function handleSaveSocial() {
+    setSocialSaveState('saving')
+    try {
+      await setSocialSettings(social)
+      setSocialSaveState('saved')
+    } catch {
+      setSocialSaveState('error')
+    } finally {
+      setTimeout(() => setSocialSaveState('idle'), 2500)
+    }
+  }
 
   if (!live) return null
 
@@ -78,7 +114,9 @@ export function LiveSettingsEditor() {
             onChange={(e) => setLive({ ...live, manualVideoId: e.target.value })}
           />
         </label>
-        <Button onClick={() => setLiveSettings(live)}>Guardar en vivo</Button>
+        <Button onClick={handleSaveLive} disabled={liveSaveState === 'saving'}>
+          {saveLabel(liveSaveState, 'Guardar en vivo')}
+        </Button>
       </div>
 
       <h2>Redes y contacto</h2>
@@ -93,7 +131,9 @@ export function LiveSettingsEditor() {
             />
           </label>
         ))}
-        <Button onClick={() => setSocialSettings(social)}>Guardar redes</Button>
+        <Button onClick={handleSaveSocial} disabled={socialSaveState === 'saving'}>
+          {saveLabel(socialSaveState, 'Guardar redes')}
+        </Button>
       </div>
     </div>
   )
