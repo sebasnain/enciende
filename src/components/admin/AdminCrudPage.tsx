@@ -1,6 +1,7 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Spinner } from '@/components/ui/Spinner'
+import { Icon } from '@/components/ui/Icon'
 import styles from './AdminCrudPage.module.css'
 
 export type AdminField = {
@@ -65,6 +66,7 @@ export function AdminCrudPage<T extends { id: string }>({
   const [form, setForm] = useState<Record<string, unknown>>(defaults)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
+  const inlineFormRef = useRef<HTMLFormElement>(null)
 
   async function reload() {
     setItems(await service.list())
@@ -74,6 +76,10 @@ export function AdminCrudPage<T extends { id: string }>({
     reload()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  useEffect(() => {
+    if (editingId) inlineFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }, [editingId])
 
   function startEdit(item: T) {
     setEditingId(item.id)
@@ -112,85 +118,107 @@ export function AdminCrudPage<T extends { id: string }>({
     await reload()
   }
 
+  function renderFields() {
+    return fields.map((field) => (
+      <div key={field.key}>
+        <label className={field.type === 'checkbox' ? styles.checkboxRow : undefined}>
+          {field.type !== 'checkbox' && <span>{field.label}</span>}
+          {field.type === 'textarea' ? (
+            <textarea
+              className={styles.textarea}
+              value={(form[field.key] as string) ?? ''}
+              onChange={(e) => setForm((f) => ({ ...f, [field.key]: e.target.value }))}
+            />
+          ) : field.type === 'select' ? (
+            <select
+              className={styles.input}
+              value={(form[field.key] as string) ?? ''}
+              onChange={(e) => setForm((f) => ({ ...f, [field.key]: e.target.value }))}
+            >
+              {field.options?.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          ) : field.type === 'checkbox' ? (
+            <>
+              <input
+                type="checkbox"
+                checked={!!form[field.key]}
+                onChange={(e) => setForm((f) => ({ ...f, [field.key]: e.target.checked }))}
+              />
+              {field.label}
+            </>
+          ) : (
+            <input
+              className={styles.input}
+              type={field.type === 'number' ? 'number' : field.type === 'datetime' ? 'datetime-local' : 'text'}
+              required={field.type === 'datetime'}
+              value={field.type === 'datetime' ? toDatetimeLocalValue(form[field.key]) : ((form[field.key] as string | number) ?? '')}
+              onChange={(e) => setForm((f) => ({ ...f, [field.key]: e.target.value }))}
+            />
+          )}
+        </label>
+        {renderAfterField?.(field.key, { form, editingId })}
+      </div>
+    ))
+  }
+
+  function handleFormSubmit(e: FormEvent) {
+    e.preventDefault()
+    handleSubmit()
+  }
+
   return (
     <div className={styles.layout}>
       <h2>{title}</h2>
 
-      <form
-        className={styles.form}
-        onSubmit={(e) => {
-          e.preventDefault()
-          handleSubmit()
-        }}
-      >
-        {fields.map((field) => (
-          <div key={field.key}>
-            <label className={field.type === 'checkbox' ? styles.checkboxRow : undefined}>
-              {field.type !== 'checkbox' && <span>{field.label}</span>}
-              {field.type === 'textarea' ? (
-                <textarea
-                  className={styles.textarea}
-                  value={(form[field.key] as string) ?? ''}
-                  onChange={(e) => setForm((f) => ({ ...f, [field.key]: e.target.value }))}
-                />
-              ) : field.type === 'select' ? (
-                <select
-                  className={styles.input}
-                  value={(form[field.key] as string) ?? ''}
-                  onChange={(e) => setForm((f) => ({ ...f, [field.key]: e.target.value }))}
-                >
-                  {field.options?.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
-              ) : field.type === 'checkbox' ? (
-                <>
-                  <input
-                    type="checkbox"
-                    checked={!!form[field.key]}
-                    onChange={(e) => setForm((f) => ({ ...f, [field.key]: e.target.checked }))}
-                  />
-                  {field.label}
-                </>
-              ) : (
-                <input
-                  className={styles.input}
-                  type={field.type === 'number' ? 'number' : field.type === 'datetime' ? 'datetime-local' : 'text'}
-                  required={field.type === 'datetime'}
-                  value={field.type === 'datetime' ? toDatetimeLocalValue(form[field.key]) : ((form[field.key] as string | number) ?? '')}
-                  onChange={(e) => setForm((f) => ({ ...f, [field.key]: e.target.value }))}
-                />
-              )}
-            </label>
-            {renderAfterField?.(field.key, { form, editingId })}
-          </div>
-        ))}
-        <div className={styles.formActions}>
-          <Button type="submit" disabled={saving}>
-            {editingId ? 'Guardar cambios' : 'Crear'}
-          </Button>
-          {editingId && (
-            <Button type="button" variant="ghost" onClick={resetForm}>
-              Cancelar
+      {!editingId && (
+        <form className={styles.form} onSubmit={handleFormSubmit}>
+          <p className={styles.modeNew}>
+            <Icon name="plus-circle-fill" /> Nuevo
+          </p>
+          {renderFields()}
+          <div className={styles.formActions}>
+            <Button type="submit" disabled={saving}>
+              Crear
             </Button>
-          )}
-        </div>
-      </form>
+          </div>
+        </form>
+      )}
 
       {!items && <Spinner />}
       {items?.map((item) => (
-        <div key={item.id} className={styles.row}>
-          <span>{labelOf(item)}</span>
-          <span className={styles.rowActions}>
-            <button className={styles.link} onClick={() => startEdit(item)}>
-              Editar
-            </button>
-            <button className={styles.link} onClick={() => handleDelete(item.id)}>
-              Eliminar
-            </button>
-          </span>
+        <div key={item.id}>
+          <div className={`${styles.row} ${editingId === item.id ? styles.rowEditing : ''}`}>
+            <span>{labelOf(item)}</span>
+            <span className={styles.rowActions}>
+              <button className={styles.link} onClick={() => (editingId === item.id ? resetForm() : startEdit(item))}>
+                {editingId === item.id ? 'Cerrar' : 'Editar'}
+              </button>
+              <button className={styles.link} onClick={() => handleDelete(item.id)}>
+                Eliminar
+              </button>
+            </span>
+          </div>
+
+          {editingId === item.id && (
+            <form ref={inlineFormRef} className={styles.inlineForm} onSubmit={handleFormSubmit}>
+              <p className={styles.modeEdit}>
+                <Icon name="pencil-fill" /> Editando "{labelOf(item)}"
+              </p>
+              {renderFields()}
+              <div className={styles.formActions}>
+                <Button type="submit" disabled={saving}>
+                  Guardar cambios
+                </Button>
+                <Button type="button" variant="ghost" onClick={resetForm}>
+                  Cancelar
+                </Button>
+              </div>
+            </form>
+          )}
         </div>
       ))}
     </div>
