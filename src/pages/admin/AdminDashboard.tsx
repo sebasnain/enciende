@@ -126,7 +126,7 @@ export function AdminDashboard() {
         <AdminCrudPage
           title="Productos"
           fields={productFields}
-          defaults={{ name: '', category: PRODUCT_CATEGORIES[0], originalPrice: null, price: 0, imageURL: '', description: '', available: true }}
+          defaults={{ name: '', category: PRODUCT_CATEGORIES[0], originalPrice: '', price: '', imageURL: '', description: '', available: true }}
           service={{ list: listProducts, create: createProduct, update: updateProduct, remove: deleteProduct }}
           labelOf={(item) => item.name}
         />

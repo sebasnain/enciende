@@ -27,6 +27,10 @@ function buildPayload(form: Record<string, unknown>, fields: AdminField[]): Reco
       const raw = payload[field.key]
       payload[field.key] = typeof raw === 'string' && raw ? new Date(raw).getTime() : null
     }
+    if (field.type === 'number') {
+      const raw = payload[field.key]
+      payload[field.key] = typeof raw === 'string' ? (raw === '' ? null : Number(raw)) : raw
+    }
   }
   return payload
 }
@@ -156,12 +160,7 @@ export function AdminCrudPage<T extends { id: string }>({
                   type={field.type === 'number' ? 'number' : field.type === 'datetime' ? 'datetime-local' : 'text'}
                   required={field.type === 'datetime'}
                   value={field.type === 'datetime' ? toDatetimeLocalValue(form[field.key]) : ((form[field.key] as string | number) ?? '')}
-                  onChange={(e) =>
-                    setForm((f) => ({
-                      ...f,
-                      [field.key]: field.type === 'number' ? Number(e.target.value) : e.target.value,
-                    }))
-                  }
+                  onChange={(e) => setForm((f) => ({ ...f, [field.key]: e.target.value }))}
                 />
               )}
             </label>
