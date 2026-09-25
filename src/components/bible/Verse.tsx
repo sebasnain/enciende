@@ -20,7 +20,8 @@ function toPlainText(html: string): string {
   return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
 }
 
-function renderWords(text: string, onSelectWord: (word: string) => void): ReactNode {
+function renderWords(text: string, onSelectWord?: (word: string) => void): ReactNode {
+  if (!onSelectWord) return text
   return text.split(/(\s+)/).map((chunk, i) => {
     if (chunk === '' || /^\s+$/.test(chunk)) return chunk
     return (
@@ -71,8 +72,7 @@ export function Verse({ number, html, highlights, note, onOpenNote, onSelect, on
       </button>
       <span ref={textRef}>
         {segments.map((seg, i) => {
-          const words = renderWords(seg.text, onSelectWord)
-          if (!seg.highlight) return <span key={i}>{words}</span>
+          if (!seg.highlight) return <span key={i}>{renderWords(seg.text, onSelectWord)}</span>
 
           const isCircle = seg.highlight.style === 'circle'
           const markStyle: CSSProperties = isCircle
@@ -84,12 +84,13 @@ export function Verse({ number, html, highlights, note, onOpenNote, onSelect, on
               key={i}
               className={isCircle ? styles.circleMark : styles.fillMark}
               style={markStyle}
+              title="Tocá para quitar el resaltado"
               onClick={(e) => {
                 e.stopPropagation()
                 onRemoveHighlight(seg.highlight!.id)
               }}
             >
-              {words}
+              {renderWords(seg.text)}
             </mark>
           )
         })}
