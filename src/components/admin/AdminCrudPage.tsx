@@ -66,6 +66,8 @@ export function AdminCrudPage<T extends { id: string }>({
   const [form, setForm] = useState<Record<string, unknown>>(defaults)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
+  const [justSaved, setJustSaved] = useState(false)
   const inlineFormRef = useRef<HTMLFormElement>(null)
 
   async function reload() {
@@ -89,10 +91,12 @@ export function AdminCrudPage<T extends { id: string }>({
   function resetForm() {
     setEditingId(null)
     setForm(defaults)
+    setSaveError(null)
   }
 
   async function handleSubmit() {
     setSaving(true)
+    setSaveError(null)
     try {
       const payload = buildPayload(form, fields)
       if (editingId) {
@@ -108,6 +112,10 @@ export function AdminCrudPage<T extends { id: string }>({
         }
       }
       await reload()
+      setJustSaved(true)
+      setTimeout(() => setJustSaved(false), 2000)
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : 'No se pudo guardar.')
     } finally {
       setSaving(false)
     }
@@ -116,6 +124,12 @@ export function AdminCrudPage<T extends { id: string }>({
   async function handleDelete(id: string) {
     await service.remove(id)
     await reload()
+  }
+
+  function submitLabel(idleLabel: string) {
+    if (saving) return 'Guardando…'
+    if (justSaved) return '✓ Guardado'
+    return idleLabel
   }
 
   function renderFields() {
@@ -182,9 +196,10 @@ export function AdminCrudPage<T extends { id: string }>({
           {renderFields()}
           <div className={styles.formActions}>
             <Button type="submit" disabled={saving}>
-              Crear
+              {submitLabel('Crear')}
             </Button>
           </div>
+          {saveError && <p className={styles.saveError}>{saveError}</p>}
         </form>
       )}
 
@@ -211,12 +226,13 @@ export function AdminCrudPage<T extends { id: string }>({
               {renderFields()}
               <div className={styles.formActions}>
                 <Button type="submit" disabled={saving}>
-                  Guardar cambios
+                  {submitLabel('Guardar cambios')}
                 </Button>
                 <Button type="button" variant="ghost" onClick={resetForm}>
                   Cancelar
                 </Button>
               </div>
+              {saveError && <p className={styles.saveError}>{saveError}</p>}
             </form>
           )}
         </div>
