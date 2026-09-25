@@ -8,13 +8,19 @@ import { useBooks } from '@/hooks/useBooks'
 import { VersionSwitcher } from '@/components/bible/VersionSwitcher'
 import { ChapterNavigator } from '@/components/bible/ChapterNavigator'
 import { VerseList } from '@/components/bible/VerseList'
-import { VerseActionMenu } from '@/components/bible/VerseActionMenu'
+import { TextSelectionBar } from '@/components/shared/TextSelectionBar'
 import { NoteEditorModal } from '@/components/bible/NoteEditorModal'
 import { DictionaryPopover } from '@/components/bible/DictionaryPopover'
 import { Spinner } from '@/components/ui/Spinner'
 import { Button } from '@/components/ui/Button'
-import type { HighlightStyle, TranslationCode } from '@/types/bible'
+import type { HighlightColor, HighlightStyle, TranslationCode } from '@/types/bible'
 import styles from './BibleReader.module.css'
+
+interface PendingSelection {
+  verse: number
+  start: number
+  end: number
+}
 
 export function BibleReader() {
   const { translation, bookId, chapter } = useParams()
@@ -30,7 +36,7 @@ export function BibleReader() {
 
   const books = useBooks(t)
   const { verses, loading, error, cached, downloading, download } = useBibleChapter(t, b, c)
-  const { highlights, setColor, setNote } = useHighlights(user?.uid ?? null, t, b, c)
+  const { highlights, notes, addHighlight, removeHighlight, setNote } = useHighlights(user?.uid ?? null, t, b, c)
 
   useEffect(() => {
     if (loading || !targetVerse) return
@@ -38,8 +44,7 @@ export function BibleReader() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, targetVerse, b, c])
 
-  const [selectedVerse, setSelectedVerse] = useState<number | null>(null)
-  const [pickerStyle, setPickerStyle] = useState<HighlightStyle>('fill')
+  const [pendingSelection, setPendingSelection] = useState<PendingSelection | null>(null)
   const [noteVerse, setNoteVerse] = useState<number | null>(null)
   const [dictionaryWord, setDictionaryWord] = useState<string | null>(null)
 
@@ -48,10 +53,11 @@ export function BibleReader() {
     navigate(`/biblia/${nextTranslation}/${nextBook}/${nextChapter}`)
   }
 
-  function selectVerse(v: number) {
-    const next = selectedVerse === v ? null : v
-    setSelectedVerse(next)
-    if (next !== null) setPickerStyle(highlights[next]?.style ?? 'fill')
+  function handlePick(color: HighlightColor, style: HighlightStyle) {
+    if (!pendingSelection) return
+    addHighlight(pendingSelection.verse, pendingSelection.start, pendingSelection.end, color, style)
+    window.getSelection()?.removeAllRanges()
+    setPendingSelection(null)
   }
 
   return (
@@ -77,32 +83,20 @@ export function BibleReader() {
         <VerseList
           verses={verses}
           highlights={highlights}
-          selectedVerse={selectedVerse}
-          onSelectVerse={selectVerse}
+          notes={notes}
+          onSelect={(verse, start, end) => setPendingSelection({ verse, start, end })}
+          onRemoveHighlight={removeHighlight}
+          onOpenNote={setNoteVerse}
           onSelectWord={(word) => setDictionaryWord(word)}
         />
       )}
 
-      {selectedVerse !== null && (
-        <VerseActionMenu
-          verse={selectedVerse}
-          color={highlights[selectedVerse]?.color ?? null}
-          highlightStyle={pickerStyle}
-          onColorChange={(color) => setColor(selectedVerse, color, pickerStyle)}
-          onStyleChange={(style) => {
-            setPickerStyle(style)
-            const currentColor = highlights[selectedVerse]?.color ?? null
-            if (currentColor) setColor(selectedVerse, currentColor, style)
-          }}
-          onOpenNote={() => setNoteVerse(selectedVerse)}
-          onClose={() => setSelectedVerse(null)}
-        />
-      )}
+      {pendingSelection && <TextSelectionBar onPick={handlePick} onClose={() => setPendingSelection(null)} />}
 
       {noteVerse !== null && (
         <NoteEditorModal
           verse={noteVerse}
-          initialNote={highlights[noteVerse]?.note ?? ''}
+          initialNote={notes[noteVerse] ?? ''}
           onSave={(note) => setNote(noteVerse, note)}
           onClose={() => setNoteVerse(null)}
         />

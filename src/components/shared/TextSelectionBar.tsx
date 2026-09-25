@@ -2,14 +2,16 @@ import { useState } from 'react'
 import type { HighlightColor, HighlightStyle } from '@/types/bible'
 import { HighlightColorPicker } from '@/components/bible/HighlightColorPicker'
 import { Icon } from '@/components/ui/Icon'
-import styles from './StudySelectionBar.module.css'
+import styles from './TextSelectionBar.module.css'
 
-interface StudySelectionBarProps {
+interface TextSelectionBarProps {
   onPick: (color: HighlightColor, style: HighlightStyle) => void
   onClose: () => void
 }
 
-export function StudySelectionBar({ onPick, onClose }: StudySelectionBarProps) {
+/** Color/style picker for a free-text selection. Shared by the Bible reader and Studies so
+ * highlighting behaves identically in both places. */
+export function TextSelectionBar({ onPick, onClose }: TextSelectionBarProps) {
   const [style, setStyle] = useState<HighlightStyle>('fill')
 
   return (

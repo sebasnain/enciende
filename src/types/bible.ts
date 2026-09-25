@@ -36,8 +36,19 @@ export interface VerseHighlight {
   book: number
   chapter: number
   verse: number
-  color: HighlightColor | null
-  style: HighlightStyle | null
-  note: string | null
+  start: number
+  end: number
+  color: HighlightColor
+  style: HighlightStyle
+  updatedAt: number
+}
+
+export interface VerseNote {
+  id: string
+  translation: TranslationCode
+  book: number
+  chapter: number
+  verse: number
+  note: string
   updatedAt: number
 }

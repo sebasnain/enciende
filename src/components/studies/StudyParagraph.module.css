@@ -8,8 +8,8 @@
 
 .fillMark {
   background: var(--highlight-amarillo);
-  border-radius: 3px;
-  padding: 0 1px;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  padding: 1px 6px;
   cursor: pointer;
 }
 
@@ -18,7 +18,6 @@
   border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
   padding: 0 6px;
   cursor: pointer;
-  filter: url(#pencil-wobble);
 }
 
 .verseLink {

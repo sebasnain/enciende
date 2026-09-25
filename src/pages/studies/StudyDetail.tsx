@@ -10,7 +10,7 @@ import { useBooks } from '@/hooks/useBooks'
 import { useStudyHighlights } from '@/hooks/useStudyHighlights'
 import { splitParagraphs } from '@/utils/studyText'
 import { StudyParagraph } from '@/components/studies/StudyParagraph'
-import { StudySelectionBar } from '@/components/studies/StudySelectionBar'
+import { TextSelectionBar } from '@/components/shared/TextSelectionBar'
 import { MarkdownView } from '@/components/ui/MarkdownView'
 import { Spinner } from '@/components/ui/Spinner'
 
@@ -88,7 +88,7 @@ export function StudyDetail() {
         </div>
       ))}
 
-      {pendingSelection && <StudySelectionBar onPick={handlePick} onClose={() => setPendingSelection(null)} />}
+      {pendingSelection && <TextSelectionBar onPick={handlePick} onClose={() => setPendingSelection(null)} />}
     </article>
   )
 }

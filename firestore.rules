@@ -26,6 +26,10 @@ service cloud.firestore {
         allow read, write: if isOwner(uid);
       }
 
+      match /verseNotes/{noteId} {
+        allow read, write: if isOwner(uid);
+      }
+
       match /studyHighlights/{highlightId} {
         allow read, write: if isOwner(uid);
       }

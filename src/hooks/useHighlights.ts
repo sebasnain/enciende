@@ -1,24 +1,25 @@
 import { useEffect, useState } from 'react'
-import { getChapterHighlights, setVerseHighlight, setVerseNote } from '@/services/highlights.service'
+import { addVerseHighlight, getChapterHighlights, getChapterNotes, removeVerseHighlight, setVerseNote } from '@/services/highlights.service'
 import type { HighlightColor, HighlightStyle, TranslationCode, VerseHighlight } from '@/types/bible'
 
-export function useHighlights(
-  uid: string | null,
-  translation: TranslationCode,
-  book: number,
-  chapter: number,
-) {
-  const [highlights, setHighlights] = useState<Record<number, VerseHighlight>>({})
+export function useHighlights(uid: string | null, translation: TranslationCode, book: number, chapter: number) {
+  const [highlights, setHighlights] = useState<VerseHighlight[]>([])
+  const [notes, setNotes] = useState<Record<number, string>>({})
   const [loading, setLoading] = useState(false)
 
   async function reload() {
     if (!uid) {
-      setHighlights({})
+      setHighlights([])
+      setNotes({})
       return
     }
     setLoading(true)
-    const result = await getChapterHighlights(uid, translation, book, chapter)
-    setHighlights(result)
+    const [highlightResult, noteResult] = await Promise.all([
+      getChapterHighlights(uid, translation, book, chapter),
+      getChapterNotes(uid, translation, book, chapter),
+    ])
+    setHighlights(highlightResult)
+    setNotes(Object.fromEntries(noteResult.map((n) => [n.verse, n.note])))
     setLoading(false)
   }
 
@@ -27,33 +28,23 @@ export function useHighlights(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uid, translation, book, chapter])
 
-  async function setColor(verse: number, color: HighlightColor | null, style: HighlightStyle = 'fill') {
+  async function addHighlight(verse: number, start: number, end: number, color: HighlightColor, style: HighlightStyle) {
     if (!uid) return
-    const appliedStyle = color ? style : null
-    setHighlights((prev) => ({
-      ...prev,
-      [verse]: {
-        ...(prev[verse] ?? { id: '', note: null }),
-        translation,
-        book,
-        chapter,
-        verse,
-        color,
-        style: appliedStyle,
-        updatedAt: Date.now(),
-      } as VerseHighlight,
-    }))
-    await setVerseHighlight(uid, translation, book, chapter, verse, color, appliedStyle)
+    const created = await addVerseHighlight(uid, translation, book, chapter, verse, start, end, color, style)
+    setHighlights((prev) => [...prev.filter((h) => h.id !== created.id), created])
+  }
+
+  async function removeHighlight(id: string) {
+    if (!uid) return
+    setHighlights((prev) => prev.filter((h) => h.id !== id))
+    await removeVerseHighlight(uid, id)
   }
 
   async function setNote(verse: number, note: string) {
     if (!uid) return
-    setHighlights((prev) => ({
-      ...prev,
-      [verse]: { ...(prev[verse] ?? { id: '', color: null }), translation, book, chapter, verse, note, updatedAt: Date.now() } as VerseHighlight,
-    }))
+    setNotes((prev) => ({ ...prev, [verse]: note }))
     await setVerseNote(uid, translation, book, chapter, verse, note)
   }
 
-  return { highlights, loading, setColor, setNote }
+  return { highlights, notes, loading, addHighlight, removeHighlight, setNote }
 }

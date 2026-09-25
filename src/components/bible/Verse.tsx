@@ -1,53 +1,117 @@
-import type { CSSProperties } from 'react'
+import { useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import type { VerseHighlight } from '@/types/bible'
+import { buildSegments, type HighlightRange } from '@/utils/studyText'
+import { getSelectionOffsets } from '@/utils/textSelection'
 import { Icon } from '@/components/ui/Icon'
 import styles from './Verse.module.css'
 
 interface VerseProps {
   number: number
   html: string
-  highlight?: VerseHighlight
-  selected: boolean
-  onSelectVerse: () => void
+  highlights: VerseHighlight[]
+  note?: string
+  onOpenNote: () => void
+  onSelect: (verse: number, start: number, end: number) => void
+  onRemoveHighlight: (id: string) => void
   onSelectWord: (word: string) => void
 }
 
-function toPlainWords(html: string): string[] {
-  const text = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
-  return text.split(' ')
+function toPlainText(html: string): string {
+  return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
 }
 
-export function Verse({ number, html, highlight, selected, onSelectVerse, onSelectWord }: VerseProps) {
-  const words = toPlainWords(html)
-  const isCircle = highlight?.style === 'circle' && !!highlight.color
-  const background = !isCircle && highlight?.color ? `var(--highlight-${highlight.color})` : undefined
-  const circleColor = isCircle ? `var(--highlight-${highlight!.color})` : undefined
+function renderWords(text: string, onSelectWord: (word: string) => void): ReactNode {
+  return text.split(/(\s+)/).map((chunk, i) => {
+    if (chunk === '' || /^\s+$/.test(chunk)) return chunk
+    return (
+      <span
+        key={i}
+        className={styles.word}
+        onClick={(e) => {
+          e.stopPropagation()
+          onSelectWord(chunk.replace(/[.,;:!?"'()]/g, ''))
+        }}
+      >
+        {chunk}
+      </span>
+    )
+  })
+}
+
+export function Verse({ number, html, highlights, note, onOpenNote, onSelect, onRemoveHighlight, onSelectWord }: VerseProps) {
+  const [noteOpen, setNoteOpen] = useState(false)
+  const textRef = useRef<HTMLSpanElement>(null)
+
+  const display = useMemo(() => toPlainText(html), [html])
+  const highlightRanges: HighlightRange[] = useMemo(
+    () => highlights.map((h) => ({ id: h.id, start: h.start, end: h.end, color: h.color, style: h.style })),
+    [highlights],
+  )
+  const segments = useMemo(() => buildSegments(display, [], highlightRanges), [display, highlightRanges])
+
+  function handleSelectionEnd() {
+    if (!textRef.current) return
+    const offsets = getSelectionOffsets(textRef.current)
+    if (!offsets) return
+    onSelect(number, offsets.start, offsets.end)
+  }
 
   return (
-    <p
-      id={`verse-${number}`}
-      className={`${styles.verse} ${selected ? styles.selected : ''} ${isCircle ? styles.circled : ''}`}
-      style={{ background, '--circle-color': circleColor } as CSSProperties}
-    >
-      <button className={styles.number} onClick={onSelectVerse} aria-label={`Seleccionar versículo ${number}`}>
+    <p id={`verse-${number}`} className={styles.verse} onMouseUp={handleSelectionEnd} onTouchEnd={handleSelectionEnd}>
+      <button
+        type="button"
+        className={styles.number}
+        onClick={(e) => {
+          e.stopPropagation()
+          onOpenNote()
+        }}
+        aria-label={`Nota del versículo ${number}`}
+      >
         {number}
       </button>
-      {words.map((word, i) => (
-        <span key={i}>
-          <span
-            className={styles.word}
+      <span ref={textRef}>
+        {segments.map((seg, i) => {
+          const words = renderWords(seg.text, onSelectWord)
+          if (!seg.highlight) return <span key={i}>{words}</span>
+
+          const isCircle = seg.highlight.style === 'circle'
+          const markStyle: CSSProperties = isCircle
+            ? ({ '--circle-color': `var(--highlight-${seg.highlight.color})` } as CSSProperties)
+            : { background: `var(--highlight-${seg.highlight.color})` }
+
+          return (
+            <mark
+              key={i}
+              className={isCircle ? styles.circleMark : styles.fillMark}
+              style={markStyle}
+              onClick={(e) => {
+                e.stopPropagation()
+                onRemoveHighlight(seg.highlight!.id)
+              }}
+            >
+              {words}
+            </mark>
+          )
+        })}
+      </span>
+      {note && (
+        <span className={styles.noteWrap}>
+          <button
+            type="button"
+            className={`${styles.noteBadge} ${noteOpen ? styles.noteBadgeActive : ''}`}
             onClick={(e) => {
               e.stopPropagation()
-              onSelectWord(word.replace(/[.,;:!?"'()]/g, ''))
+              setNoteOpen((o) => !o)
             }}
+            aria-label="Ver nota"
           >
-            {word}
-          </span>{' '}
-        </span>
-      ))}
-      {highlight?.note && (
-        <span title={highlight.note}>
-          <Icon name="sticky-fill" className={styles.noteBadge} />
+            <Icon name="flag-fill" />
+          </button>
+          {noteOpen && (
+            <span className={styles.notePopover} onClick={(e) => e.stopPropagation()}>
+              {note}
+            </span>
+          )}
         </span>
       )}
     </p>
