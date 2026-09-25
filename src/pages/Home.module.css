@@ -101,15 +101,11 @@
 }
 
 .facebook {
-  background: #1877f2;
-}
-
-.whatsapp {
-  background: #25d366;
+  background: var(--color-flame-500);
 }
 
 .instagram {
-  background: radial-gradient(circle at 30% 110%, #fdf497 0%, #fd5949 45%, #d6249f 60%, #285aeb 90%);
+  background: var(--color-flame-500);
 }
 
 .youtube {

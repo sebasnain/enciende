@@ -14,10 +14,6 @@ import studiesBg from '@/assets/home/studies.jpg'
 import devotionalBg from '@/assets/home/devotional.jpg'
 import styles from './Home.module.css'
 
-function whatsappHref(value: string) {
-  return value.startsWith('http') ? value : `https://wa.me/${value.replace(/\D/g, '')}`
-}
-
 export function Home() {
   const { user } = useAuth()
   const [activePlan, setActivePlan] = useState<ActivePlanProgress | null>(null)
@@ -38,7 +34,7 @@ export function Home() {
   }, [user])
 
   const completedCount = activePlan ? Object.keys(activePlan.progress.completedDayIds).length : 0
-  const hasSocial = social && (social.facebook || social.whatsapp || social.instagram || social.youtube)
+  const hasSocial = social && (social.facebook || social.instagram || social.youtube)
   const planImage = activePlan?.plan.coverImage || planBg
 
   return (
@@ -74,11 +70,6 @@ export function Home() {
           {social?.facebook && (
             <a href={social.facebook} target="_blank" rel="noreferrer" className={`${styles.socialIcon} ${styles.facebook}`}>
               <Icon name="facebook" />
-            </a>
-          )}
-          {social?.whatsapp && (
-            <a href={whatsappHref(social.whatsapp)} target="_blank" rel="noreferrer" className={`${styles.socialIcon} ${styles.whatsapp}`}>
-              <Icon name="whatsapp" />
             </a>
           )}
           {social?.instagram && (
