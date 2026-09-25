@@ -17,6 +17,24 @@ function toPlainText(html: string): string {
   return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
 }
 
+const FOOTNOTE = /(\[\d+\])/
+
+// Footnote markers like "[12]" (NVI) point to notes the API doesn't provide. They're hidden
+// with CSS rather than stripped, so the verse's text — and every saved highlight offset
+// measured against it — stays exactly the same.
+function renderText(text: string) {
+  if (!FOOTNOTE.test(text)) return text
+  return text.split(FOOTNOTE).map((part, i) =>
+    FOOTNOTE.test(part) ? (
+      <span key={i} className={styles.footnote}>
+        {part}
+      </span>
+    ) : (
+      part
+    ),
+  )
+}
+
 function VerseComponent({ number, html, highlights, note, onOpenNote }: VerseProps) {
   const [noteOpen, setNoteOpen] = useState(false)
 
@@ -35,10 +53,10 @@ function VerseComponent({ number, html, highlights, note, onOpenNote }: VersePro
         {segments.map((seg, i) =>
           seg.highlight ? (
             <mark key={i} {...markProps(seg.highlight.color, seg.highlight.style)}>
-              {seg.text}
+              {renderText(seg.text)}
             </mark>
           ) : (
-            <span key={i}>{seg.text}</span>
+            <span key={i}>{renderText(seg.text)}</span>
           ),
         )}
       </span>
