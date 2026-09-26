@@ -29,7 +29,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return onAuthStateChanged(auth, async (authUser) => {
       setUser(authUser)
       if (authUser) {
-        await loadProfile(authUser)
+        try {
+          await loadProfile(authUser)
+        } catch (err) {
+          console.error('No se pudo cargar el perfil del usuario', err)
+        }
       } else {
         setProfile(null)
       }
