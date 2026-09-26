@@ -174,15 +174,42 @@ export async function setMembershipPlan(plan: Omit<LibraryMembershipPlan, 'id'>,
   await setDoc(doc(membershipPlansRef, planId), plan)
 }
 
-export async function createReservation(reservation: Pick<LibraryReservation, 'titleId' | 'titleName' | 'userId' | 'memberName'>): Promise<string> {
-  const docRef = await addDoc(reservationsRef, {
+/**
+ * Pedido de un miembro: si hay un ejemplar disponible ahora, lo aparta directo (48hs para retirarlo, igual que
+ * cuando se libera uno por una devolución); si no, lo anota en la lista de espera. Atómico para que dos personas
+ * no se lleven el mismo ejemplar "disponible" al mismo tiempo.
+ */
+export async function requestReservation(
+  reservation: Pick<LibraryReservation, 'titleId' | 'titleName' | 'userId' | 'memberName'>,
+): Promise<LibraryReservation['status']> {
+  const availableSnap = await getDocs(query(copiesRef, where('titleId', '==', reservation.titleId), where('status', '==', 'disponible')))
+  const availableCopy = availableSnap.docs[0]
+
+  const batch = writeBatch(db)
+  const reservationDocRef = doc(reservationsRef)
+
+  if (availableCopy) {
+    batch.set(reservationDocRef, {
+      ...reservation,
+      requestedAt: Date.now(),
+      status: 'disponible_para_retirar',
+      availableAt: Date.now(),
+      expiresAt: Date.now() + RESERVATION_PICKUP_WINDOW_MS,
+    })
+    batch.update(doc(copiesRef, availableCopy.id), { status: 'reservado' })
+    await batch.commit()
+    return 'disponible_para_retirar'
+  }
+
+  batch.set(reservationDocRef, {
     ...reservation,
     requestedAt: Date.now(),
     status: 'en_espera',
     availableAt: null,
     expiresAt: null,
   })
-  return docRef.id
+  await batch.commit()
+  return 'en_espera'
 }
 
 export async function listReservationsByUser(userId: string): Promise<LibraryReservation[]> {

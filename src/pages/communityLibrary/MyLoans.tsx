@@ -44,12 +44,13 @@ export function MyLoans() {
   const active = loans.filter((l) => l.status === 'activo')
   const history = loans.filter((l) => l.status !== 'activo').sort((a, b) => b.loanDate - a.loanDate)
   const pendingReservations = reservations.filter((r) => r.status === 'en_espera' || r.status === 'disponible_para_retirar')
+  const commitmentCount = active.length + pendingReservations.length
 
   return (
     <div>
       <h1>Mis préstamos</h1>
       <p className={styles.summary}>
-        {active.length} de {loanLimit} préstamos en uso.
+        {commitmentCount} de {loanLimit} en uso (préstamos activos + reservas pendientes).
       </p>
 
       {active.length === 0 ? (
