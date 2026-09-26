@@ -1,4 +1,6 @@
-export type UserRole = 'member' | 'admin'
+import type { LibraryMembership } from './library'
+
+export type UserRole = 'member' | 'admin' | 'bibliotecario'
 
 export interface UserStreak {
   current: number
@@ -14,4 +16,5 @@ export interface UserProfile {
   role: UserRole
   createdAt: number
   streak: UserStreak
+  libraryMembership?: LibraryMembership
 }

@@ -15,7 +15,7 @@ function saveLabel(state: SaveState, idleLabel: string) {
   return idleLabel
 }
 
-export function LiveSettingsEditor() {
+export function LiveSettingsEditor({ readOnly }: { readOnly?: boolean }) {
   const [live, setLive] = useState<LiveSettings | null>(null)
   const [social, setSocial] = useState<Partial<SocialSettings>>({})
   const [liveSaveState, setLiveSaveState] = useState<SaveState>('idle')
@@ -63,6 +63,7 @@ export function LiveSettingsEditor() {
             className={styles.input}
             value={live.scheduleDay}
             onChange={(e) => setLive({ ...live, scheduleDay: Number(e.target.value) })}
+            disabled={readOnly}
           >
             {DAYS.map((day, i) => (
               <option key={day} value={i}>
@@ -78,6 +79,7 @@ export function LiveSettingsEditor() {
             type="number"
             value={live.scheduleHour}
             onChange={(e) => setLive({ ...live, scheduleHour: Number(e.target.value) })}
+            disabled={readOnly}
           />
         </label>
         <label>
@@ -87,6 +89,7 @@ export function LiveSettingsEditor() {
             type="number"
             value={live.durationMinutes}
             onChange={(e) => setLive({ ...live, durationMinutes: Number(e.target.value) })}
+            disabled={readOnly}
           />
         </label>
         <label>
@@ -96,6 +99,7 @@ export function LiveSettingsEditor() {
             value={live.channelUrl}
             onChange={(e) => setLive({ ...live, channelUrl: e.target.value })}
             placeholder="https://youtube.com/@tucanal"
+            disabled={readOnly}
           />
         </label>
         <label className={styles.checkboxRow}>
@@ -103,6 +107,7 @@ export function LiveSettingsEditor() {
             type="checkbox"
             checked={live.manualActive}
             onChange={(e) => setLive({ ...live, manualActive: e.target.checked })}
+            disabled={readOnly}
           />
           Forzar "en vivo" ahora (evento especial)
         </label>
@@ -112,11 +117,14 @@ export function LiveSettingsEditor() {
             className={styles.input}
             value={live.manualVideoId ?? ''}
             onChange={(e) => setLive({ ...live, manualVideoId: e.target.value })}
+            disabled={readOnly}
           />
         </label>
-        <Button onClick={handleSaveLive} disabled={liveSaveState === 'saving'}>
-          {saveLabel(liveSaveState, 'Guardar en vivo')}
-        </Button>
+        {!readOnly && (
+          <Button onClick={handleSaveLive} disabled={liveSaveState === 'saving'}>
+            {saveLabel(liveSaveState, 'Guardar en vivo')}
+          </Button>
+        )}
       </div>
 
       <h2>Redes y contacto</h2>
@@ -128,12 +136,15 @@ export function LiveSettingsEditor() {
               className={styles.input}
               value={social[key] ?? ''}
               onChange={(e) => setSocial((s) => ({ ...s, [key]: e.target.value }))}
+              disabled={readOnly}
             />
           </label>
         ))}
-        <Button onClick={handleSaveSocial} disabled={socialSaveState === 'saving'}>
-          {saveLabel(socialSaveState, 'Guardar redes')}
-        </Button>
+        {!readOnly && (
+          <Button onClick={handleSaveSocial} disabled={socialSaveState === 'saving'}>
+            {saveLabel(socialSaveState, 'Guardar redes')}
+          </Button>
+        )}
       </div>
     </div>
   )

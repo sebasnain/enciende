@@ -4,8 +4,8 @@ import styles from './BottomNav.module.css'
 
 const ITEMS = [
   { to: '/', label: 'Inicio', icon: 'house-door-fill' },
+  { to: '/biblioteca', label: 'Biblioteca', icon: 'journal-bookmark-fill' },
   { to: '/biblia', label: 'Biblia', icon: 'book-fill' },
-  { to: '/planes', label: 'Planes', icon: 'cup-hot-fill' },
   { to: '/cronograma', label: 'Agenda', icon: 'calendar-event-fill' },
   { to: '/libreria', label: 'Librería', icon: 'shop' },
 ]

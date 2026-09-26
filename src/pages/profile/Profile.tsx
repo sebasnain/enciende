@@ -38,7 +38,11 @@ export function Profile() {
 
       <ShareApp />
 
-      {profile.role === 'admin' && <Button variant="secondary" onClick={() => navigate('/admin')}>Panel de administración</Button>}
+      {(profile.role === 'admin' || profile.role === 'bibliotecario') && (
+        <Button variant="secondary" onClick={() => navigate('/admin')}>
+          Panel de administración
+        </Button>
+      )}
       <Button variant="ghost" onClick={handleLogout}>
         Cerrar sesión
       </Button>

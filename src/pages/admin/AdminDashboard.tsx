@@ -8,10 +8,11 @@ import { PRODUCT_CATEGORIES, PRODUCT_STATUSES } from '@/types/products'
 import { useAuth } from '@/context/AuthContext'
 import { PlanDaysEditor } from './PlanDaysEditor'
 import { LessonsEditor } from './LessonsEditor'
+import { LibraryAdminPanel } from './LibraryAdminPanel'
 import { LiveSettingsEditor } from './LiveSettingsEditor'
 import styles from './AdminDashboard.module.css'
 
-const TABS = ['Devocionales', 'Estudios', 'Planes', 'Cronograma', 'Librería', 'En vivo'] as const
+const TABS = ['Devocionales', 'Estudios', 'Planes', 'Cronograma', 'Biblioteca', 'Librería', 'En vivo'] as const
 type Tab = (typeof TABS)[number]
 
 const devotionalFields: AdminField[] = [
@@ -58,11 +59,15 @@ const productFields: AdminField[] = [
 export function AdminDashboard() {
   const { profile } = useAuth()
   const [tab, setTab] = useState<Tab>('Devocionales')
+  const isAdmin = profile?.role === 'admin'
 
   return (
     <div>
       <h1>Panel de administración</h1>
-      <p style={{ color: 'var(--color-ink-400)', marginBottom: 16 }}>Hola {profile?.displayName}, gestiona el contenido de Enciende.</p>
+      <p style={{ color: 'var(--color-ink-400)', marginBottom: 16 }}>
+        Hola {profile?.displayName}
+        {isAdmin ? ', gestiona el contenido de Enciende.' : ', podés ver el contenido de Enciende (solo lectura).'}
+      </p>
 
       <div className={styles.tabs}>
         {TABS.map((t) => (
@@ -79,6 +84,7 @@ export function AdminDashboard() {
           defaults={{ title: '', body: '', coverImage: '', authorId: profile?.uid, authorName: profile?.displayName, tags: [] }}
           service={devotionalsService}
           labelOf={(item) => item.title}
+          readOnly={!isAdmin}
         />
       )}
 
@@ -89,6 +95,7 @@ export function AdminDashboard() {
           defaults={{ title: '', series: '', body: '', coverImage: '', authorId: profile?.uid, authorName: profile?.displayName }}
           service={studiesService}
           labelOf={(item) => item.title}
+          readOnly={!isAdmin}
           keepEditingAfterCreate
           renderAfterField={(key, { editingId }) =>
             key === 'body' ? (
@@ -111,6 +118,7 @@ export function AdminDashboard() {
           defaults={{ title: '', description: '', durationDays: 7, category: '', coverImage: '', published: false }}
           service={{ list: listPublishedPlans, create: createPlan, update: updatePlan, remove: deletePlan }}
           labelOf={(item) => item.title}
+          readOnly={!isAdmin}
           keepEditingAfterCreate
           renderAfterField={(key, { form, editingId }) =>
             key === 'durationDays' ? (
@@ -133,8 +141,11 @@ export function AdminDashboard() {
           defaults={{ title: '', description: '', startAt: '', endAt: null, location: '', category: 'culto' }}
           service={{ list: listUpcomingEvents, create: createEvent, update: updateEvent, remove: deleteEvent }}
           labelOf={(item) => item.title}
+          readOnly={!isAdmin}
         />
       )}
+
+      {tab === 'Biblioteca' && <LibraryAdminPanel />}
 
       {tab === 'Librería' && (
         <AdminCrudPage
@@ -143,10 +154,11 @@ export function AdminDashboard() {
           defaults={{ name: '', category: PRODUCT_CATEGORIES[0], status: PRODUCT_STATUSES[0], originalPrice: '', price: '', imageURL: '', description: '', available: true }}
           service={{ list: listProducts, create: createProduct, update: updateProduct, remove: deleteProduct }}
           labelOf={(item) => item.name}
+          readOnly={!isAdmin}
         />
       )}
 
-      {tab === 'En vivo' && <LiveSettingsEditor />}
+      {tab === 'En vivo' && <LiveSettingsEditor readOnly={!isAdmin} />}
     </div>
   )
 }

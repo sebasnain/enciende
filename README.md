@@ -35,6 +35,8 @@ firebase deploy --only hosting
 
 El primer usuario admin se promueve manualmente: registra tu cuenta desde `/register`, luego en la consola de Firestore edita el documento `users/{tu-uid}` y cambia `role` de `member` a `admin`. Desde ahí ya puedes gestionar contenido en `/admin`.
 
+Para dar de alta un bibliotecario (rol para gestionar la Biblioteca comunitaria) se hace de la misma forma: cambiar `role` a `bibliotecario` en el documento del usuario. Puede ver el resto de las pestañas de `/admin` en modo solo lectura, pero únicamente puede crear/editar/eliminar en la pestaña "Biblioteca".
+
 ### Configurar la transmisión en vivo y redes sociales
 
 Desde `/admin` → pestaña "En vivo" se configura el día/hora programado del culto (por defecto domingos 19:00, 2 horas de duración) y los links de redes sociales/contacto.

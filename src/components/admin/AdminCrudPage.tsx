@@ -51,6 +51,10 @@ interface AdminCrudPageProps<T extends { id: string }> {
   renderAfterField?: (key: string, ctx: { form: Record<string, unknown>; editingId: string | null }) => ReactNode
   /** After creating a new item, keep it open for editing instead of resetting the form. */
   keepEditingAfterCreate?: boolean
+  /** Muestra el listado sin permitir crear, editar ni eliminar (p. ej. bibliotecario mirando otras pestañas). */
+  readOnly?: boolean
+  /** Contenido extra arriba del formulario de "Nuevo", con acceso para prellenar campos (p. ej. un botón de escaneo). */
+  renderBeforeNewForm?: (ctx: { setFields: (patch: Record<string, unknown>) => void }) => ReactNode
 }
 
 export function AdminCrudPage<T extends { id: string }>({
@@ -61,6 +65,8 @@ export function AdminCrudPage<T extends { id: string }>({
   labelOf,
   renderAfterField,
   keepEditingAfterCreate,
+  readOnly,
+  renderBeforeNewForm,
 }: AdminCrudPageProps<T>) {
   const [items, setItems] = useState<T[] | null>(null)
   const [form, setForm] = useState<Record<string, unknown>>(defaults)
@@ -188,7 +194,9 @@ export function AdminCrudPage<T extends { id: string }>({
     <div className={styles.layout}>
       <h2>{title}</h2>
 
-      {!editingId && (
+      {!editingId && !readOnly && renderBeforeNewForm?.({ setFields: (patch) => setForm((f) => ({ ...f, ...patch })) })}
+
+      {!editingId && !readOnly && (
         <form className={styles.form} onSubmit={handleFormSubmit}>
           <p className={styles.modeNew}>
             <Icon name="plus-circle-fill" /> Nuevo
@@ -208,17 +216,19 @@ export function AdminCrudPage<T extends { id: string }>({
         <div key={item.id}>
           <div className={`${styles.row} ${editingId === item.id ? styles.rowEditing : ''}`}>
             <span>{labelOf(item)}</span>
-            <span className={styles.rowActions}>
-              <button className={styles.link} onClick={() => (editingId === item.id ? resetForm() : startEdit(item))}>
-                {editingId === item.id ? 'Cerrar' : 'Editar'}
-              </button>
-              <button className={styles.link} onClick={() => handleDelete(item.id)}>
-                Eliminar
-              </button>
-            </span>
+            {!readOnly && (
+              <span className={styles.rowActions}>
+                <button className={styles.link} onClick={() => (editingId === item.id ? resetForm() : startEdit(item))}>
+                  {editingId === item.id ? 'Cerrar' : 'Editar'}
+                </button>
+                <button className={styles.link} onClick={() => handleDelete(item.id)}>
+                  Eliminar
+                </button>
+              </span>
+            )}
           </div>
 
-          {editingId === item.id && (
+          {!readOnly && editingId === item.id && (
             <form ref={inlineFormRef} className={styles.inlineForm} onSubmit={handleFormSubmit}>
               <p className={styles.modeEdit}>
                 <Icon name="pencil-fill" /> Editando "{labelOf(item)}"

@@ -1,0 +1,148 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.myLoansLink {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-flame-600);
+  white-space: nowrap;
+}
+
+/* Category chips (mismo lenguaje visual que la Librería) */
+
+.categoryRow {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding: var(--space-1) 0 var(--space-4);
+  scrollbar-width: none;
+}
+
+.categoryRow::-webkit-scrollbar {
+  display: none;
+}
+
+.categoryChip {
+  flex-shrink: 0;
+  border: 1px solid var(--color-cream-500);
+  background: var(--color-cream-100);
+  color: var(--color-ink-700);
+  font-weight: 600;
+  font-size: 13px;
+  padding: var(--space-2) var(--space-4);
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.categoryChipActive {
+  background: var(--color-flame-500);
+  border-color: var(--color-flame-500);
+  color: var(--color-white);
+}
+
+/* Ficha de título */
+
+.detailCover {
+  width: 100%;
+  max-width: 220px;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  margin-bottom: var(--space-3);
+}
+
+.detailCategoryChip {
+  display: inline-block;
+  background: var(--color-cream-400);
+  color: var(--color-ink-700);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  margin: var(--space-2) 0;
+}
+
+.availabilityOk {
+  color: var(--color-success);
+  font-weight: 700;
+}
+
+.availabilityNone {
+  color: var(--color-ink-400);
+  font-weight: 700;
+}
+
+/* Mis préstamos */
+
+.summary {
+  color: var(--color-ink-400);
+  margin-bottom: var(--space-3);
+}
+
+.loanRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-cream-500);
+  font-weight: 600;
+}
+
+.dueDate {
+  color: var(--color-ink-400);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.overdue {
+  color: var(--color-danger, #c0392b);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.inlineLink {
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--color-flame-600);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Ficha de título: reservar */
+
+.reserveButton {
+  border: none;
+  background: var(--color-flame-500);
+  color: var(--color-white);
+  font-weight: 700;
+  font-size: 14px;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  margin: var(--space-2) 0;
+}
+
+.reserveButton:disabled {
+  background: var(--color-cream-400);
+  color: var(--color-ink-400);
+  cursor: not-allowed;
+}
+
+.reserveStatus {
+  color: var(--color-flame-600);
+  font-weight: 700;
+  margin: var(--space-2) 0;
+}

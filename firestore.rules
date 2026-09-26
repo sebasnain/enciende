@@ -16,10 +16,20 @@ service cloud.firestore {
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
+    function isBibliotecario() {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'bibliotecario';
+    }
+
+    function isLibraryStaff() {
+      return isAdmin() || isBibliotecario();
+    }
+
     match /users/{uid} {
-      allow read: if isOwner(uid) || isAdmin();
+      allow read: if isOwner(uid) || isAdmin() || isBibliotecario();
       allow create: if isOwner(uid);
-      allow update: if isOwner(uid) || isAdmin();
+      allow update: if isOwner(uid) || isAdmin() ||
+        (isBibliotecario() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['libraryMembership']));
       allow delete: if false;
 
       match /highlights/{highlightId} {
@@ -77,6 +87,42 @@ service cloud.firestore {
     match /settings/{id} {
       allow read: if true;
       allow write: if isAdmin();
+    }
+
+    match /libraryTitles/{id} {
+      allow read: if true;
+      allow write: if isLibraryStaff();
+    }
+
+    match /libraryCopies/{id} {
+      allow read: if true;
+      allow write: if isLibraryStaff();
+    }
+
+    match /libraryMembershipPlans/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /libraryLoans/{id} {
+      allow read: if isLibraryStaff() || isOwner(resource.data.userId);
+      allow create, update, delete: if isLibraryStaff();
+    }
+
+    match /libraryReservations/{id} {
+      allow read: if isLibraryStaff() || isOwner(resource.data.userId);
+      allow create: if isLibraryStaff() || isOwner(request.resource.data.userId);
+      // El titular solo puede cancelar su propia reserva; el resto de las transiciones de estado las hace el staff.
+      allow update: if isLibraryStaff() ||
+        (isOwner(resource.data.userId) &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status']) &&
+          request.resource.data.status == 'cancelado');
+      allow delete: if isLibraryStaff();
+    }
+
+    match /libraryFines/{id} {
+      allow read: if isLibraryStaff() || isOwner(resource.data.userId);
+      allow write: if isLibraryStaff();
     }
   }
 }
