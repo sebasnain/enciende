@@ -65,7 +65,13 @@ export function BarcodeScanner({ title, onDetected, onClose }: BarcodeScannerPro
         <p style={{ color: 'var(--color-danger, #c0392b)' }}>{error}</p>
       ) : (
         // eslint-disable-next-line jsx-a11y/media-has-caption
-        <video ref={videoRef} muted style={{ width: '100%', borderRadius: 8, background: '#000' }} />
+        <video
+          ref={videoRef}
+          muted
+          autoPlay
+          playsInline
+          style={{ width: '100%', borderRadius: 8, background: '#000' }}
+        />
       )}
     </Modal>
   )
