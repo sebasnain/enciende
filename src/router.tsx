@@ -4,6 +4,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute'
 import { AdminRoute } from '@/components/layout/AdminRoute'
 import { Spinner } from '@/components/ui/Spinner'
+import { RouteError } from '@/components/layout/RouteError'
 import { Home } from '@/pages/Home'
 import { Welcome } from '@/pages/auth/Welcome'
 import { Login } from '@/pages/auth/Login'
@@ -30,9 +31,10 @@ import { Profile } from '@/pages/profile/Profile'
 const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard').then((m) => ({ default: m.AdminDashboard })))
 
 export const router = createBrowserRouter([
-  { path: '/bienvenida', element: <Welcome /> },
+  { path: '/bienvenida', element: <Welcome />, errorElement: <RouteError /> },
   {
     element: <AppShell />,
+    errorElement: <RouteError />,
     children: [
       { path: '/', element: <Home /> },
       { path: '/login', element: <Login /> },
