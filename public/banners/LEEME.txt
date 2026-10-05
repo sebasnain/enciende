@@ -1,0 +1,15 @@
+CARPETA DE BANNERS DE EVENTOS
+
+Guardá acá las imágenes de los banners y publicá la app (npm run publicar).
+Después, en el panel de administración > Inscripciones, pegá en el campo de
+imagen la ruta, por ejemplo:   /banners/retiro-jovenes.jpg
+
+Tamaños recomendados
+- Banner chico del Inicio:   1200 x 400 px (horizontal, 3:1)
+- Banner grande (1 vez/día): 1080 x 1350 px (vertical) o 1080 x 1080 px (cuadrado)
+
+Consejos
+- Usá JPG (pesa menos que PNG), de 300 KB a 1 MB como máximo.
+- Nombres de archivo sin espacios, tildes ni mayúsculas: retiro-jovenes.jpg
+- Si reemplazás una imagen con el mismo nombre, cambiá el nombre (ej: retiro-v2.jpg)
+  o los celulares pueden seguir mostrando la anterior por un tiempo.

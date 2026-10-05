@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "publicar": "npm run build && npx firebase-tools deploy --only hosting"
   },
   "dependencies": {
     "@zxing/browser": "^0.2.1",
