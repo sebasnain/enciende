@@ -124,5 +124,32 @@ service cloud.firestore {
       allow read: if isLibraryStaff() || isOwner(resource.data.userId);
       allow write: if isLibraryStaff();
     }
+    match /signupEvents/{eventId} {
+      allow read: if true;
+      allow create, delete: if isAdmin();
+      // Una persona logueada solo puede subir el contador de inscriptos, y únicamente junto con la creación de su
+      // propia inscripción en la misma transacción, por exactamente la cantidad de personas que anota.
+      allow update: if isAdmin() || (
+        isSignedIn() &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['registeredCount']) &&
+        !exists(/databases/$(database)/documents/signupEvents/$(eventId)/registrations/$(request.auth.uid)) &&
+        existsAfter(/databases/$(database)/documents/signupEvents/$(eventId)/registrations/$(request.auth.uid)) &&
+        request.resource.data.registeredCount ==
+          resource.data.registeredCount +
+          getAfter(/databases/$(database)/documents/signupEvents/$(eventId)/registrations/$(request.auth.uid)).data.totalPeople &&
+        (resource.data.capacity == null || request.resource.data.registeredCount <= resource.data.capacity)
+      );
+
+      match /registrations/{uid} {
+        allow read: if isAdmin() || isOwner(uid);
+        allow create: if isOwner(uid) &&
+          request.resource.data.userId == uid &&
+          request.resource.data.companions.size() <= 30 &&
+          request.resource.data.totalPeople == 1 + request.resource.data.companions.size() &&
+          (request.resource.data.isGroupLeader == true || request.resource.data.companions.size() == 0);
+        allow update: if false;
+        allow delete: if isAdmin();
+      }
+    }
   }
 }

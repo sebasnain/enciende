@@ -22,6 +22,7 @@ import { Library } from '@/pages/library/Library'
 import { CommunityLibraryList } from '@/pages/communityLibrary/CommunityLibraryList'
 import { CommunityLibraryDetail } from '@/pages/communityLibrary/CommunityLibraryDetail'
 import { MyLoans } from '@/pages/communityLibrary/MyLoans'
+import { EventSignup } from '@/pages/signups/EventSignup'
 import { Profile } from '@/pages/profile/Profile'
 
 // El panel de admin carga las librerías de escaneo de códigos (QR/ISBN) de la biblioteca comunitaria, que pesan
@@ -47,6 +48,14 @@ export const router = createBrowserRouter([
       { path: '/estudios/:id', element: <StudyDetail /> },
       { path: '/cronograma', element: <Schedule /> },
       { path: '/libreria', element: <Library /> },
+      {
+        path: '/inscripcion/:eventId',
+        element: (
+          <ProtectedRoute>
+            <EventSignup />
+          </ProtectedRoute>
+        ),
+      },
       { path: '/biblioteca', element: <CommunityLibraryList /> },
       {
         path: '/biblioteca/mis-prestamos',

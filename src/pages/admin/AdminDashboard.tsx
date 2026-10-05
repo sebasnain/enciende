@@ -10,11 +10,12 @@ import { useAuth } from '@/context/AuthContext'
 import { PlanDaysEditor } from './PlanDaysEditor'
 import { LessonsEditor } from './LessonsEditor'
 import { LibraryAdminPanel } from './LibraryAdminPanel'
+import { SignupEventsPanel } from './SignupEventsPanel'
 import { IsbnScanButton } from './IsbnScanButton'
 import { LiveSettingsEditor } from './LiveSettingsEditor'
 import styles from './AdminDashboard.module.css'
 
-const TABS = ['Devocionales', 'Estudios', 'Planes', 'Cronograma', 'Biblioteca', 'Librería', 'En vivo'] as const
+const TABS = ['Devocionales', 'Estudios', 'Planes', 'Cronograma', 'Inscripciones', 'Biblioteca', 'Librería', 'En vivo'] as const
 type Tab = (typeof TABS)[number]
 
 const devotionalFields: AdminField[] = [
@@ -149,6 +150,8 @@ export function AdminDashboard() {
           readOnly={!isAdmin}
         />
       )}
+
+      {tab === 'Inscripciones' && <SignupEventsPanel readOnly={!isAdmin} />}
 
       {tab === 'Biblioteca' && <LibraryAdminPanel />}
 

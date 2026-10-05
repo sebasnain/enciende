@@ -1,0 +1,80 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-bottom: var(--space-6);
+}
+
+.description {
+  margin: 0;
+}
+
+.meta {
+  margin: 0;
+  color: var(--color-ink-400);
+  font-size: 14px;
+}
+
+.input {
+  border: 1px solid var(--color-cream-500);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  font-family: inherit;
+  font-size: 15px;
+  width: 100%;
+  background: var(--color-white);
+}
+
+.checkRow {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  background: var(--color-cream-100);
+  border: 1px solid var(--color-cream-500);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+}
+
+.companion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-cream-500);
+}
+
+.remove {
+  align-self: flex-end;
+  border: none;
+  background: none;
+  color: var(--color-danger, #c0392b);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.hint {
+  margin: 0;
+  color: var(--color-ink-400);
+  font-size: 13px;
+}
+
+.error {
+  margin: 0;
+  color: var(--color-danger, #c0392b);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.success {
+  color: var(--color-success);
+  font-weight: 700;
+}

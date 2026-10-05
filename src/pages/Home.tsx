@@ -8,6 +8,7 @@ import type { ChurchEvent } from '@/types/events'
 import type { SocialSettings } from '@/types/products'
 import { Icon } from '@/components/ui/Icon'
 import { ProgressBar } from '@/components/ui/ProgressBar'
+import { HomeEventBanner } from '@/components/events/HomeEventBanner'
 import planBg from '@/assets/home/plan.jpg'
 import activityBg from '@/assets/home/activity.jpg'
 import studiesBg from '@/assets/home/studies.jpg'
@@ -39,6 +40,8 @@ export function Home() {
 
   return (
     <div className={styles.page}>
+      <HomeEventBanner />
+
       <Link
         to={activePlan ? `/planes/${activePlan.plan.id}` : '/planes'}
         className={styles.planCard}
