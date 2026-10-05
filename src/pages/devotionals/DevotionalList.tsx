@@ -9,7 +9,7 @@ export function DevotionalList() {
   const [items, setItems] = useState<Devotional[] | null>(null)
 
   useEffect(() => {
-    devotionalsService.list().then(setItems)
+    devotionalsService.listPublished().then(setItems)
   }, [])
 
   if (!items) return <Spinner />

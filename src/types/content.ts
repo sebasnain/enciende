@@ -8,6 +8,8 @@ export interface Devotional {
   authorName: string
   coverImage: string | null
   publishedAt: number
+  /** Si está en el futuro, el devocional queda oculto para los miembros hasta esa fecha. */
+  publishAt?: number | null
   tags: string[]
 }
 
@@ -19,6 +21,7 @@ export interface Study {
   authorName: string
   coverImage: string | null
   publishedAt: number
+  publishAt?: number | null
   series: string | null
 }
 

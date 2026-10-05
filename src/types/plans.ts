@@ -14,6 +14,8 @@ export interface ReadingPlan {
   durationDays: number
   category: string
   published: boolean
+  /** Con "published" activo, el plan se muestra recién desde esta fecha. */
+  publishAt?: number | null
   createdAt: number
 }
 

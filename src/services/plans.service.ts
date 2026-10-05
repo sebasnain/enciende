@@ -15,12 +15,19 @@ import {
 } from 'firebase/firestore'
 import { db } from '@/firebase/config'
 import type { PlanProgress, ReadingPlan, ReadingPlanDay } from '@/types/plans'
+import { isPublishedNow } from '@/utils/publishing'
 
 const plansRef = collection(db, 'plans')
 
 export async function listPublishedPlans(): Promise<ReadingPlan[]> {
   const q = query(plansRef, where('published', '==', true))
   const snap = await getDocs(q)
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as ReadingPlan).filter((plan) => isPublishedNow(plan))
+}
+
+/** Para el panel de administración: incluye borradores y planes programados a futuro. */
+export async function listAllPlans(): Promise<ReadingPlan[]> {
+  const snap = await getDocs(plansRef)
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as ReadingPlan)
 }
 

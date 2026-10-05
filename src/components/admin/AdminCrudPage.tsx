@@ -9,6 +9,8 @@ export type AdminField = {
   label: string
   type: 'text' | 'textarea' | 'number' | 'checkbox' | 'datetime' | 'select'
   options?: string[]
+  /** Solo para 'datetime': permite dejar la fecha vacía (se guarda como null). */
+  optional?: boolean
 }
 
 function toDatetimeLocalValue(raw: unknown): string {
@@ -174,7 +176,7 @@ export function AdminCrudPage<T extends { id: string }>({
             <input
               className={styles.input}
               type={field.type === 'number' ? 'number' : field.type === 'datetime' ? 'datetime-local' : 'text'}
-              required={field.type === 'datetime'}
+              required={field.type === 'datetime' && !field.optional}
               value={field.type === 'datetime' ? toDatetimeLocalValue(form[field.key]) : ((form[field.key] as string | number) ?? '')}
               onChange={(e) => setForm((f) => ({ ...f, [field.key]: e.target.value }))}
             />

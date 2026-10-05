@@ -3,12 +3,14 @@ import { AdminCrudPage, type AdminField } from '@/components/admin/AdminCrudPage
 import { devotionalsService, studiesService } from '@/services/content.service'
 import { createEvent, deleteEvent, listUpcomingEvents, updateEvent } from '@/services/events.service'
 import { createProduct, deleteProduct, listProducts, updateProduct } from '@/services/products.service'
-import { createPlan, deletePlan, listPublishedPlans, updatePlan } from '@/services/plans.service'
+import { createPlan, deletePlan, listAllPlans, updatePlan } from '@/services/plans.service'
+import { scheduledSuffix } from '@/utils/publishing'
 import { PRODUCT_CATEGORIES, PRODUCT_STATUSES } from '@/types/products'
 import { useAuth } from '@/context/AuthContext'
 import { PlanDaysEditor } from './PlanDaysEditor'
 import { LessonsEditor } from './LessonsEditor'
 import { LibraryAdminPanel } from './LibraryAdminPanel'
+import { IsbnScanButton } from './IsbnScanButton'
 import { LiveSettingsEditor } from './LiveSettingsEditor'
 import styles from './AdminDashboard.module.css'
 
@@ -19,6 +21,7 @@ const devotionalFields: AdminField[] = [
   { key: 'title', label: 'Título', type: 'text' },
   { key: 'body', label: 'Contenido (markdown)', type: 'textarea' },
   { key: 'coverImage', label: 'Imagen de portada (URL)', type: 'text' },
+  { key: 'publishAt', label: 'Publicar el (opcional, día y hora; vacío = ya mismo)', type: 'datetime', optional: true },
 ]
 
 const studyFields: AdminField[] = [
@@ -26,6 +29,7 @@ const studyFields: AdminField[] = [
   { key: 'series', label: 'Serie', type: 'text' },
   { key: 'body', label: 'Contenido (markdown)', type: 'textarea' },
   { key: 'coverImage', label: 'Imagen de portada (URL)', type: 'text' },
+  { key: 'publishAt', label: 'Publicar el (opcional, día y hora; vacío = ya mismo)', type: 'datetime', optional: true },
 ]
 
 const planFields: AdminField[] = [
@@ -34,7 +38,8 @@ const planFields: AdminField[] = [
   { key: 'durationDays', label: 'Duración (días)', type: 'number' },
   { key: 'category', label: 'Categoría', type: 'text' },
   { key: 'coverImage', label: 'Imagen de portada (URL)', type: 'text' },
-  { key: 'published', label: 'Publicado', type: 'checkbox' },
+  { key: 'publishAt', label: 'Mostrar desde (opcional, día y hora; vacío = ya mismo)', type: 'datetime', optional: true },
+  { key: 'published', label: 'Publicado (con fecha, se muestra recién desde ese día y hora)', type: 'checkbox' },
 ]
 
 const eventFields: AdminField[] = [
@@ -81,9 +86,9 @@ export function AdminDashboard() {
         <AdminCrudPage
           title="Devocionales"
           fields={devotionalFields}
-          defaults={{ title: '', body: '', coverImage: '', authorId: profile?.uid, authorName: profile?.displayName, tags: [] }}
+          defaults={{ title: '', body: '', coverImage: '', publishAt: '', authorId: profile?.uid, authorName: profile?.displayName, tags: [] }}
           service={devotionalsService}
-          labelOf={(item) => item.title}
+          labelOf={(item) => item.title + scheduledSuffix(item)}
           readOnly={!isAdmin}
         />
       )}
@@ -92,9 +97,9 @@ export function AdminDashboard() {
         <AdminCrudPage
           title="Estudios"
           fields={studyFields}
-          defaults={{ title: '', series: '', body: '', coverImage: '', authorId: profile?.uid, authorName: profile?.displayName }}
+          defaults={{ title: '', series: '', body: '', coverImage: '', publishAt: '', authorId: profile?.uid, authorName: profile?.displayName }}
           service={studiesService}
-          labelOf={(item) => item.title}
+          labelOf={(item) => item.title + scheduledSuffix(item)}
           readOnly={!isAdmin}
           keepEditingAfterCreate
           renderAfterField={(key, { editingId }) =>
@@ -115,9 +120,9 @@ export function AdminDashboard() {
         <AdminCrudPage
           title="Planes de lectura"
           fields={planFields}
-          defaults={{ title: '', description: '', durationDays: 7, category: '', coverImage: '', published: false }}
-          service={{ list: listPublishedPlans, create: createPlan, update: updatePlan, remove: deletePlan }}
-          labelOf={(item) => item.title}
+          defaults={{ title: '', description: '', durationDays: 7, category: '', coverImage: '', publishAt: '', published: false }}
+          service={{ list: listAllPlans, create: createPlan, update: updatePlan, remove: deletePlan }}
+          labelOf={(item) => item.title + scheduledSuffix(item)}
           readOnly={!isAdmin}
           keepEditingAfterCreate
           renderAfterField={(key, { form, editingId }) =>
@@ -155,6 +160,19 @@ export function AdminDashboard() {
           service={{ list: listProducts, create: createProduct, update: updateProduct, remove: deleteProduct }}
           labelOf={(item) => item.name}
           readOnly={!isAdmin}
+          renderBeforeNewForm={({ setFields }) => (
+            <IsbnScanButton
+              onResult={(book) =>
+                setFields({
+                  ...(book.title ? { name: book.title } : {}),
+                  ...(book.coverImageUrl ? { imageURL: book.coverImageUrl } : {}),
+                  ...(book.author || book.publisher
+                    ? { description: [book.author, book.publisher].filter(Boolean).join(' · ') }
+                    : {}),
+                })
+              }
+            />
+          )}
         />
       )}
 

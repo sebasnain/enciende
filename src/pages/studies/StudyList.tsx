@@ -9,7 +9,7 @@ export function StudyList() {
   const [items, setItems] = useState<Study[] | null>(null)
 
   useEffect(() => {
-    studiesService.list().then(setItems)
+    studiesService.listPublished().then(setItems)
   }, [])
 
   if (!items) return <Spinner />
