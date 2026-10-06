@@ -9,6 +9,8 @@ import {
 } from '@/services/signups.service'
 import type { SignupEvent } from '@/types/signups'
 import { RegistrationsList } from './RegistrationsList'
+import { downloadRegistrationsPdf } from './registrationsPdf'
+import styles from '@/components/admin/AdminCrudPage.module.css'
 
 const signupEventFields: AdminField[] = [
   { key: 'title', label: 'Título del evento', type: 'text' },
@@ -20,7 +22,7 @@ const signupEventFields: AdminField[] = [
   { key: 'showFrom', label: 'Mostrar banner desde (opcional)', type: 'datetime', optional: true },
   { key: 'showUntil', label: 'Mostrar banner hasta, y cerrar inscripción (opcional)', type: 'datetime', optional: true },
   { key: 'capacity', label: 'Cupo máximo de personas (vacío = sin límite)', type: 'number' },
-  { key: 'askMinistry', label: 'Preguntar si es danzarín/a o adorador/a (o sin especificar)', type: 'checkbox' },
+  { key: 'askMinistry', label: 'Preguntar si es danzor o adorador (o sin especificar)', type: 'checkbox' },
 ]
 
 interface SignupEventsPanelProps {
@@ -55,6 +57,7 @@ export function SignupEventsPanel({ readOnly }: SignupEventsPanelProps) {
       }}
       labelOf={(item) => `${item.title} (${item.registeredCount}${item.capacity ? `/${item.capacity}` : ''} inscriptos)`}
       readOnly={readOnly}
+      renderRowActions={(item) => <PdfRowButton event={item} />}
       keepEditingAfterCreate
       renderAfterField={(key, { editingId }) => {
         if (key !== 'askMinistry' || readOnly) return null
@@ -80,4 +83,26 @@ function EditingRegistrations({ eventId }: { eventId: string }) {
   }, [eventId])
 
   return event ? <RegistrationsList event={event} /> : null
+}
+
+/** Descarga la lista de inscriptos desde el listado, sin tener que abrir el evento para editarlo. */
+function PdfRowButton({ event }: { event: SignupEvent }) {
+  const [busy, setBusy] = useState(false)
+
+  async function handleClick() {
+    setBusy(true)
+    try {
+      await downloadRegistrationsPdf(event)
+    } catch (err) {
+      window.alert(err instanceof Error ? err.message : 'No se pudo generar el PDF.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <button type="button" className={styles.link} onClick={handleClick} disabled={busy}>
+      {busy ? 'Generando…' : 'PDF'}
+    </button>
+  )
 }

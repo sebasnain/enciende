@@ -1,9 +1,13 @@
 export type Ministry = 'danza' | 'adoracion' | 'sin_especificar'
 
 export const MINISTRY_LABELS: Record<Ministry, string> = {
-  danza: 'Danzarín/a',
-  adoracion: 'Adorador/a',
+  danza: 'Danzor',
+  adoracion: 'Adorador',
   sin_especificar: 'Sin especificar',
+}
+
+export function ministryLabel(ministry: Ministry | undefined): string {
+  return MINISTRY_LABELS[ministry ?? 'sin_especificar']
 }
 
 export interface SignupEvent {
@@ -20,7 +24,7 @@ export interface SignupEvent {
   showUntil: number | null
   /** Máximo de personas (el líder y sus acompañantes cuentan); null = sin límite. */
   capacity: number | null
-  /** Si está activo, el formulario pregunta a cada persona si es danzarín/a, adorador/a o sin especificar. */
+  /** Si está activo, el formulario pregunta a cada persona si es danzor, adorador o sin especificar. */
   askMinistry?: boolean
   /** Personas ya inscriptas. Lo mantiene la propia inscripción, nunca se edita desde el formulario del evento. */
   registeredCount: number

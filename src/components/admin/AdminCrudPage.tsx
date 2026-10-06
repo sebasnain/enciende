@@ -56,6 +56,8 @@ interface AdminCrudPageProps<T extends { id: string }> {
   keepEditingAfterCreate?: boolean
   /** Muestra el listado sin permitir crear, editar ni eliminar (p. ej. bibliotecario mirando otras pestañas). */
   readOnly?: boolean
+  /** Acciones extra en cada fila del listado, antes de Editar/Eliminar (no se muestran en modo solo lectura). */
+  renderRowActions?: (item: T) => ReactNode
   /** Contenido extra arriba del formulario de "Nuevo", con acceso para prellenar campos (p. ej. un botón de escaneo). */
   renderBeforeNewForm?: (ctx: { setFields: (patch: Record<string, unknown>) => void }) => ReactNode
 }
@@ -70,6 +72,7 @@ export function AdminCrudPage<T extends { id: string }>({
   keepEditingAfterCreate,
   readOnly,
   renderBeforeNewForm,
+  renderRowActions,
 }: AdminCrudPageProps<T>) {
   const [items, setItems] = useState<T[] | null>(null)
   const [form, setForm] = useState<Record<string, unknown>>(defaults)
@@ -221,6 +224,7 @@ export function AdminCrudPage<T extends { id: string }>({
             <span>{labelOf(item)}</span>
             {!readOnly && (
               <span className={styles.rowActions}>
+                {renderRowActions?.(item)}
                 <button className={styles.link} onClick={() => (editingId === item.id ? resetForm() : startEdit(item))}>
                   {editingId === item.id ? 'Cerrar' : 'Editar'}
                 </button>
