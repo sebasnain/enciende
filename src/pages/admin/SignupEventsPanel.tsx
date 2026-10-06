@@ -48,7 +48,10 @@ export function SignupEventsPanel({ readOnly }: SignupEventsPanelProps) {
         list: listSignupEvents,
         create: createSignupEvent,
         update: updateSignupEvent,
-        remove: deleteSignupEvent,
+        remove: async (id: string) => {
+          if (!window.confirm('¿Eliminar el evento y TODAS sus inscripciones? No se puede deshacer.')) return
+          await deleteSignupEvent(id)
+        },
       }}
       labelOf={(item) => `${item.title} (${item.registeredCount}${item.capacity ? `/${item.capacity}` : ''} inscriptos)`}
       readOnly={readOnly}

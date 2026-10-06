@@ -51,7 +51,14 @@ export async function updateSignupEvent(eventId: string, patch: Partial<SignupEv
   await updateDoc(doc(eventsRef, eventId), editable)
 }
 
+/** Firestore no borra subcolecciones solo: se eliminan las inscripciones (en tandas) antes que el evento. */
 export async function deleteSignupEvent(eventId: string) {
+  const registrations = await getDocs(registrationsRef(eventId))
+  for (let i = 0; i < registrations.docs.length; i += 400) {
+    const batch = writeBatch(db)
+    registrations.docs.slice(i, i + 400).forEach((d) => batch.delete(d.ref))
+    await batch.commit()
+  }
   await deleteDoc(doc(eventsRef, eventId))
 }
 
