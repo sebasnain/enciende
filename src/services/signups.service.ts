@@ -40,7 +40,14 @@ export async function getSignupEvent(eventId: string): Promise<SignupEvent | nul
   return snap.exists() ? ({ id: snap.id, ...snap.data() } as SignupEvent) : null
 }
 
+function assertValidDates(event: Partial<Pick<SignupEvent, 'eventDate' | 'eventEndDate'>>) {
+  if (event.eventDate && event.eventEndDate && event.eventEndDate <= event.eventDate) {
+    throw new Error('La fecha de fin del evento tiene que ser posterior a la de inicio.')
+  }
+}
+
 export async function createSignupEvent(event: Omit<SignupEvent, 'id' | 'registeredCount' | 'createdAt'>): Promise<string> {
+  assertValidDates(event)
   const docRef = await addDoc(eventsRef, { ...event, registeredCount: 0, createdAt: Date.now() })
   return docRef.id
 }
@@ -48,6 +55,7 @@ export async function createSignupEvent(event: Omit<SignupEvent, 'id' | 'registe
 /** El contador de inscriptos nunca se pisa desde el formulario del evento: puede haber cambiado mientras se editaba. */
 export async function updateSignupEvent(eventId: string, patch: Partial<SignupEvent>) {
   const { id: _id, registeredCount: _count, createdAt: _createdAt, ...editable } = patch
+  assertValidDates(editable)
   await updateDoc(doc(eventsRef, eventId), editable)
 }
 

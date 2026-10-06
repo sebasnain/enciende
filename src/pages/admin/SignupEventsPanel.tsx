@@ -15,7 +15,8 @@ import styles from '@/components/admin/AdminCrudPage.module.css'
 const signupEventFields: AdminField[] = [
   { key: 'title', label: 'Título del evento', type: 'text' },
   { key: 'description', label: 'Descripción', type: 'textarea' },
-  { key: 'eventDate', label: 'Fecha y hora del evento (opcional)', type: 'datetime', optional: true },
+  { key: 'eventDate', label: 'Fecha y hora de inicio del evento (opcional)', type: 'datetime', optional: true },
+  { key: 'eventEndDate', label: 'Fecha y hora de fin del evento (opcional, si dura más de un día)', type: 'datetime', optional: true },
   { key: 'location', label: 'Lugar', type: 'text' },
   { key: 'bannerImageUrl', label: 'Banner chico del Inicio, 1200x400 (ej: /banners/evento.jpg o una URL)', type: 'text' },
   { key: 'popupImageUrl', label: 'Banner grande, 1 vez por día, 1080x1350 (ej: /banners/evento-grande.jpg, opcional)', type: 'text' },
@@ -38,6 +39,7 @@ export function SignupEventsPanel({ readOnly }: SignupEventsPanelProps) {
         title: '',
         description: '',
         eventDate: '',
+        eventEndDate: '',
         location: '',
         bannerImageUrl: '',
         popupImageUrl: '',

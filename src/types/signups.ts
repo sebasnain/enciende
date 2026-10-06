@@ -14,7 +14,10 @@ export interface SignupEvent {
   id: string
   title: string
   description: string
+  /** Inicio del evento (opcional). */
   eventDate: number | null
+  /** Fin del evento (opcional), para eventos de más de un día. */
+  eventEndDate?: number | null
   location: string
   /** Banner chico que se muestra en el Inicio mientras dure la campaña. */
   bannerImageUrl: string
@@ -56,6 +59,30 @@ export interface SignupRegistration {
 }
 
 export type RegistrationInput = Omit<SignupRegistration, 'id' | 'userId' | 'totalPeople' | 'createdAt'>
+
+const DAY_FORMAT: Intl.DateTimeFormatOptions = { weekday: 'long', day: 'numeric', month: 'long' }
+const TIME_FORMAT: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }
+
+function formatDay(ms: number): string {
+  return new Date(ms).toLocaleDateString('es-AR', DAY_FORMAT)
+}
+
+function formatTime(ms: number): string {
+  return new Date(ms).toLocaleTimeString('es-AR', TIME_FORMAT)
+}
+
+/** "viernes 14 de noviembre, 19:00 hasta sábado 15 de noviembre, 18:00"; con inicio y fin el mismo día, "… de 19:00 a 22:00". */
+export function formatEventDates(start: number | null | undefined, end: number | null | undefined): string {
+  if (start && end) {
+    if (new Date(start).toDateString() === new Date(end).toDateString()) {
+      return `${formatDay(start)}, de ${formatTime(start)} a ${formatTime(end)}`
+    }
+    return `Desde el ${formatDay(start)}, ${formatTime(start)} hasta el ${formatDay(end)}, ${formatTime(end)}`
+  }
+  if (start) return `${formatDay(start)}, ${formatTime(start)}`
+  if (end) return `Hasta el ${formatDay(end)}, ${formatTime(end)}`
+  return ''
+}
 
 export function isSignupOpen(event: SignupEvent, now = Date.now()): boolean {
   return (!event.showFrom || event.showFrom <= now) && (!event.showUntil || event.showUntil >= now)

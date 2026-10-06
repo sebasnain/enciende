@@ -2,7 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { getMyRegistration, getSignupEvent, registerForEvent } from '@/services/signups.service'
-import { isSignupOpen, MINISTRY_LABELS, spotsLeft, type Ministry, type SignupEvent, type SignupRegistration } from '@/types/signups'
+import { formatEventDates, isSignupOpen, MINISTRY_LABELS, spotsLeft, type Ministry, type SignupEvent, type SignupRegistration } from '@/types/signups'
 import { Button } from '@/components/ui/Button'
 import { Spinner } from '@/components/ui/Spinner'
 import styles from './EventSignup.module.css'
@@ -156,10 +156,10 @@ export function EventSignup() {
     <form className={styles.page} onSubmit={handleSubmit}>
       <h1>{event.title}</h1>
       {event.description && <p className={styles.description}>{event.description}</p>}
-      {(event.eventDate || event.location) && (
+      {(event.eventDate || event.eventEndDate || event.location) && (
         <p className={styles.meta}>
-          {event.eventDate ? new Date(event.eventDate).toLocaleString('es-AR', { dateStyle: 'full', timeStyle: 'short' }) : ''}
-          {event.eventDate && event.location ? ' · ' : ''}
+          {formatEventDates(event.eventDate, event.eventEndDate)}
+          {(event.eventDate || event.eventEndDate) && event.location ? ' · ' : ''}
           {event.location}
         </p>
       )}
