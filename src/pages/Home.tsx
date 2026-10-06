@@ -9,6 +9,7 @@ import type { SocialSettings } from '@/types/products'
 import { Icon } from '@/components/ui/Icon'
 import { ProgressBar } from '@/components/ui/ProgressBar'
 import { HomeEventBanner } from '@/components/events/HomeEventBanner'
+import { InstallApp } from '@/components/profile/InstallApp'
 import planBg from '@/assets/home/plan.jpg'
 import activityBg from '@/assets/home/activity.jpg'
 import studiesBg from '@/assets/home/studies.jpg'
@@ -110,6 +111,8 @@ export function Home() {
           <span className={styles.miniLabel}>Devocional</span>
         </Link>
       </div>
+
+      <InstallApp />
     </div>
   )
 }

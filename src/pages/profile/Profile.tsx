@@ -5,6 +5,7 @@ import { auth } from '@/firebase/config'
 import { useAuth } from '@/context/AuthContext'
 import { StreakFlame } from '@/components/streak/StreakFlame'
 import { ShareApp } from '@/components/profile/ShareApp'
+import { InstallApp } from '@/components/profile/InstallApp'
 import { Button } from '@/components/ui/Button'
 import { buildLabel, forceAppUpdate } from '@/utils/appUpdate'
 import styles from './Profile.module.css'
@@ -36,6 +37,7 @@ export function Profile() {
         <span className={styles.streakLabel}>Racha actual — récord: {profile.streak.longest} días</span>
       </div>
 
+      <InstallApp />
       <ShareApp />
 
       {(profile.role === 'admin' || profile.role === 'bibliotecario') && (
