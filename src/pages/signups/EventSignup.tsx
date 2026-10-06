@@ -2,7 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { getMyRegistration, getSignupEvent, registerForEvent } from '@/services/signups.service'
-import { isSignupOpen, spotsLeft, type SignupEvent, type SignupRegistration } from '@/types/signups'
+import { isSignupOpen, MINISTRY_LABELS, spotsLeft, type Ministry, type SignupEvent, type SignupRegistration } from '@/types/signups'
 import { Button } from '@/components/ui/Button'
 import { Spinner } from '@/components/ui/Spinner'
 import styles from './EventSignup.module.css'
@@ -11,9 +11,10 @@ interface PersonForm {
   firstName: string
   lastName: string
   age: string
+  ministry: Ministry
 }
 
-const EMPTY_PERSON: PersonForm = { firstName: '', lastName: '', age: '' }
+const EMPTY_PERSON: PersonForm = { firstName: '', lastName: '', age: '', ministry: 'sin_especificar' }
 const MAX_COMPANIONS = 30
 
 function parseAge(raw: string): number | null {
@@ -23,6 +24,18 @@ function parseAge(raw: string): number | null {
 
 function isPersonComplete(person: PersonForm): boolean {
   return !!person.firstName.trim() && !!person.lastName.trim() && parseAge(person.age) !== null
+}
+
+function MinistrySelect({ value, onChange }: { value: Ministry; onChange: (value: Ministry) => void }) {
+  return (
+    <select className={styles.input} value={value} onChange={(e) => onChange(e.target.value as Ministry)}>
+      {(Object.keys(MINISTRY_LABELS) as Ministry[]).map((key) => (
+        <option key={key} value={key}>
+          {MINISTRY_LABELS[key]}
+        </option>
+      ))}
+    </select>
+  )
 }
 
 export function EventSignup() {
@@ -79,12 +92,18 @@ export function EventSignup() {
         firstName: me.firstName.trim(),
         lastName: me.lastName.trim(),
         age: myAge,
+        ...(event.askMinistry ? { ministry: me.ministry } : {}),
         church: church.trim(),
         city: city.trim(),
         phone: phone.trim(),
         isGroupLeader,
         companions: isGroupLeader
-          ? companions.map((c) => ({ firstName: c.firstName.trim(), lastName: c.lastName.trim(), age: parseAge(c.age)! }))
+          ? companions.map((c) => ({
+              firstName: c.firstName.trim(),
+              lastName: c.lastName.trim(),
+              age: parseAge(c.age)!,
+              ...(event.askMinistry ? { ministry: c.ministry } : {}),
+            }))
           : [],
       })
       setDone(true)
@@ -159,6 +178,7 @@ export function EventSignup() {
         value={me.age}
         onChange={(e) => setMe({ ...me, age: e.target.value })}
       />
+      {event.askMinistry && <MinistrySelect value={me.ministry} onChange={(ministry) => setMe({ ...me, ministry })} />}
       <input className={styles.input} placeholder="Iglesia" value={church} onChange={(e) => setChurch(e.target.value)} />
       <input className={styles.input} placeholder="Ciudad desde donde viajás" value={city} onChange={(e) => setCity(e.target.value)} />
       <input className={styles.input} type="tel" placeholder="Teléfono / WhatsApp" value={phone} onChange={(e) => setPhone(e.target.value)} />
@@ -200,6 +220,9 @@ export function EventSignup() {
                 value={companion.age}
                 onChange={(e) => updateCompanion(index, { age: e.target.value })}
               />
+              {event.askMinistry && (
+                <MinistrySelect value={companion.ministry} onChange={(ministry) => updateCompanion(index, { ministry })} />
+              )}
               <button type="button" className={styles.remove} onClick={() => setCompanions((list) => list.filter((_, i) => i !== index))}>
                 Quitar
               </button>

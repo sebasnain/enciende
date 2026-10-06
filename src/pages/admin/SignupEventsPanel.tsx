@@ -20,6 +20,7 @@ const signupEventFields: AdminField[] = [
   { key: 'showFrom', label: 'Mostrar banner desde (opcional)', type: 'datetime', optional: true },
   { key: 'showUntil', label: 'Mostrar banner hasta, y cerrar inscripción (opcional)', type: 'datetime', optional: true },
   { key: 'capacity', label: 'Cupo máximo de personas (vacío = sin límite)', type: 'number' },
+  { key: 'askMinistry', label: 'Preguntar si es danzarín/a o adorador/a (o sin especificar)', type: 'checkbox' },
 ]
 
 interface SignupEventsPanelProps {
@@ -41,6 +42,7 @@ export function SignupEventsPanel({ readOnly }: SignupEventsPanelProps) {
         showFrom: '',
         showUntil: '',
         capacity: '',
+        askMinistry: false,
       }}
       service={{
         list: listSignupEvents,
@@ -52,7 +54,7 @@ export function SignupEventsPanel({ readOnly }: SignupEventsPanelProps) {
       readOnly={readOnly}
       keepEditingAfterCreate
       renderAfterField={(key, { editingId }) => {
-        if (key !== 'capacity' || readOnly) return null
+        if (key !== 'askMinistry' || readOnly) return null
         return editingId ? (
           <EditingRegistrations eventId={editingId} />
         ) : (

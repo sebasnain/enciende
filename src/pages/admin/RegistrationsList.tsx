@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { listRegistrations, removeRegistration } from '@/services/signups.service'
-import type { SignupEvent, SignupRegistration } from '@/types/signups'
+import { MINISTRY_LABELS, type Ministry, type SignupEvent, type SignupRegistration } from '@/types/signups'
 import { Button } from '@/components/ui/Button'
 import styles from '@/components/admin/AdminCrudPage.module.css'
 
@@ -8,12 +8,45 @@ interface RegistrationsListProps {
   event: SignupEvent
 }
 
-function toPdfRows(registrations: SignupRegistration[]): string[][] {
+function ministryLabel(ministry: Ministry | undefined): string {
+  return MINISTRY_LABELS[ministry ?? 'sin_especificar']
+}
+
+function ministryCounts(registrations: SignupRegistration[]): Record<Ministry, number> {
+  const counts: Record<Ministry, number> = { danza: 0, adoracion: 0, sin_especificar: 0 }
+  registrations.forEach((r) => {
+    counts[r.ministry ?? 'sin_especificar'] += 1
+    r.companions.forEach((c) => (counts[c.ministry ?? 'sin_especificar'] += 1))
+  })
+  return counts
+}
+
+function toPdfRows(registrations: SignupRegistration[], withMinistry: boolean): string[][] {
   const rows: string[][] = []
   registrations.forEach((r) => {
-    rows.push([String(rows.length + 1), r.firstName, r.lastName, String(r.age), r.church, r.city, r.phone, r.isGroupLeader ? 'Líder de grupo' : 'Individual'])
+    rows.push([
+      String(rows.length + 1),
+      r.firstName,
+      r.lastName,
+      String(r.age),
+      ...(withMinistry ? [ministryLabel(r.ministry)] : []),
+      r.church,
+      r.city,
+      r.phone,
+      r.isGroupLeader ? 'Líder de grupo' : 'Individual',
+    ])
     r.companions.forEach((c) => {
-      rows.push([String(rows.length + 1), c.firstName, c.lastName, String(c.age), r.church, r.city, r.phone, `Va con ${r.firstName} ${r.lastName}`])
+      rows.push([
+        String(rows.length + 1),
+        c.firstName,
+        c.lastName,
+        String(c.age),
+        ...(withMinistry ? [ministryLabel(c.ministry)] : []),
+        r.church,
+        r.city,
+        r.phone,
+        `Va con ${r.firstName} ${r.lastName}`,
+      ])
     })
   })
   return rows
@@ -45,7 +78,9 @@ export function RegistrationsList({ event }: RegistrationsListProps) {
     if (!registrations) return
     const [{ jsPDF }, { default: autoTable }] = await Promise.all([import('jspdf'), import('jspdf-autotable')])
     const pdf = new jsPDF({ orientation: 'landscape' })
-    const rows = toPdfRows(registrations)
+    const withMinistry = !!event.askMinistry
+    const rows = toPdfRows(registrations, withMinistry)
+    const counts = ministryCounts(registrations)
 
     pdf.setFontSize(16)
     pdf.text(`Inscriptos: ${event.title}`, 14, 16)
@@ -55,9 +90,12 @@ export function RegistrationsList({ event }: RegistrationsListProps) {
       14,
       23,
     )
+    if (withMinistry) {
+      pdf.text(`Danza: ${counts.danza} · Adoración: ${counts.adoracion} · Sin especificar: ${counts.sin_especificar}`, 14, 29)
+    }
     autoTable(pdf, {
-      startY: 28,
-      head: [['#', 'Nombre', 'Apellido', 'Edad', 'Iglesia', 'Ciudad', 'Teléfono', 'Rol']],
+      startY: withMinistry ? 34 : 28,
+      head: [['#', 'Nombre', 'Apellido', 'Edad', ...(withMinistry ? ['Ministerio'] : []), 'Iglesia', 'Ciudad', 'Teléfono', 'Rol']],
       body: rows,
       styles: { fontSize: 9 },
       headStyles: { fillColor: [214, 69, 38] },
@@ -78,12 +116,12 @@ export function RegistrationsList({ event }: RegistrationsListProps) {
       {registrations?.map((r) => (
         <div key={r.id} className={styles.row}>
           <span>
-            {r.firstName} {r.lastName} ({r.age}) · {r.church} · {r.city} · {r.phone}
+            {r.firstName} {r.lastName} ({r.age}){event.askMinistry ? ` · ${ministryLabel(r.ministry)}` : ''} · {r.church} · {r.city} · {r.phone}
             {r.isGroupLeader && (
               <>
                 <br />
                 <span style={{ fontSize: 12, color: 'var(--color-ink-400)' }}>
-                  Líder de grupo, con: {r.companions.map((c) => `${c.firstName} ${c.lastName} (${c.age})`).join(', ')}
+                  Líder de grupo, con: {r.companions.map((c) => `${c.firstName} ${c.lastName} (${c.age}${event.askMinistry ? `, ${ministryLabel(c.ministry)}` : ''})`).join(', ')}
                 </span>
               </>
             )}

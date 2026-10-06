@@ -28,7 +28,8 @@ function buildPayload(form: Record<string, unknown>, fields: AdminField[]): Reco
   for (const field of fields) {
     if (field.type === 'datetime') {
       const raw = payload[field.key]
-      payload[field.key] = typeof raw === 'string' && raw ? new Date(raw).getTime() : null
+      // Una fecha ya guardada llega como número (ms): hay que conservarla, no pisarla con null.
+      payload[field.key] = typeof raw === 'number' ? raw : typeof raw === 'string' && raw ? new Date(raw).getTime() : null
     }
     if (field.type === 'number') {
       const raw = payload[field.key]
