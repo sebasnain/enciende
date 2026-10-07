@@ -14,6 +14,7 @@ import { DEFAULT_MARKER_TOOL, MarkerToolbar, paintToolOf, previewNameOf } from '
 import { Spinner } from '@/components/ui/Spinner'
 import { Button } from '@/components/ui/Button'
 import type { TranslationCode } from '@/types/bible'
+import { usableTranslation } from '@/utils/translations'
 import styles from './BibleReader.module.css'
 
 export function BibleReader() {
@@ -23,7 +24,7 @@ export function BibleReader() {
   const { user } = useAuth()
   const { setPosition } = useBiblePosition()
 
-  const t = (translation as TranslationCode) ?? 'NVI'
+  const t = usableTranslation(translation)
   const b = Number(bookId)
   const c = Number(chapter)
   const targetVerse = Number(searchParams.get('v')) || null
@@ -35,6 +36,15 @@ export function BibleReader() {
   const [markerActive, setMarkerActive] = useState(false)
   const [tool, setTool] = useState(DEFAULT_MARKER_TOOL)
   const [noteVerse, setNoteVerse] = useState<number | null>(null)
+
+  useEffect(() => {
+    // Un link viejo a una traducción que ya no está disponible (p. ej. NVI) se reemplaza por la predeterminada.
+    if (translation && translation !== t) {
+      const query = searchParams.toString()
+      navigate(`/biblia/${t}/${bookId}/${chapter}${query ? `?${query}` : ''}`, { replace: true })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [translation])
 
   useEffect(() => {
     if (loading || !targetVerse) return

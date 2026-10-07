@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import type { TranslationCode } from '@/types/bible'
+import { DEFAULT_TRANSLATION, usableTranslation } from '@/utils/translations'
 
 const STORAGE_KEY = 'enciende:last-position'
 
@@ -9,7 +10,7 @@ interface BiblePosition {
   chapter: number
 }
 
-const DEFAULT_POSITION: BiblePosition = { translation: 'NVI', book: 43, chapter: 3 }
+const DEFAULT_POSITION: BiblePosition = { translation: DEFAULT_TRANSLATION, book: 43, chapter: 3 }
 
 interface BibleContextValue {
   position: BiblePosition
@@ -21,7 +22,10 @@ const BibleContext = createContext<BibleContextValue | null>(null)
 function loadStoredPosition(): BiblePosition {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    return raw ? (JSON.parse(raw) as BiblePosition) : DEFAULT_POSITION
+    if (!raw) return DEFAULT_POSITION
+    const stored = JSON.parse(raw) as BiblePosition
+    // Quien tenía guardada una traducción que ya no está disponible sigue en el mismo libro y capítulo, con la predeterminada.
+    return { ...stored, translation: usableTranslation(stored.translation) }
   } catch {
     return DEFAULT_POSITION
   }

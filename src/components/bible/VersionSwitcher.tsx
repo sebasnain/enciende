@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { TranslationCode } from '@/types/bible'
 import { Modal } from '@/components/ui/Modal'
 import { Icon } from '@/components/ui/Icon'
+import { unavailableReason } from '@/utils/translations'
 import styles from './VersionSwitcher.module.css'
 
 const VERSIONS: { code: TranslationCode; label: string; fullName: string }[] = [
@@ -34,20 +35,25 @@ export function VersionSwitcher({
       {open && (
         <Modal title="Elegí una versión" onClose={() => setOpen(false)}>
           <div className={styles.list}>
-            {VERSIONS.map((version) => (
-              <button
-                key={version.code}
-                className={`${styles.item} ${value === version.code ? styles.itemActive : ''}`}
-                onClick={() => {
-                  onChange(version.code)
-                  setOpen(false)
-                }}
-              >
-                <span className={styles.itemLabel}>{version.label}</span>
-                <span className={styles.itemName}>{version.fullName}</span>
-                {value === version.code && <Icon name="check-lg" />}
-              </button>
-            ))}
+            {VERSIONS.map((version) => {
+              const reason = unavailableReason(version.code)
+              return (
+                <button
+                  key={version.code}
+                  className={`${styles.item} ${value === version.code ? styles.itemActive : ''}`}
+                  disabled={!!reason}
+                  style={reason ? { opacity: 0.5, cursor: 'not-allowed' } : undefined}
+                  onClick={() => {
+                    onChange(version.code)
+                    setOpen(false)
+                  }}
+                >
+                  <span className={styles.itemLabel}>{version.label}</span>
+                  <span className={styles.itemName}>{reason ? `${version.fullName} — ${reason}` : version.fullName}</span>
+                  {value === version.code && <Icon name="check-lg" />}
+                </button>
+              )
+            })}
           </div>
         </Modal>
       )}
