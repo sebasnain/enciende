@@ -1,3 +1,4 @@
+import { SafeImage } from '@/components/ui/SafeImage'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
@@ -79,7 +80,7 @@ export function HomeEventBanner() {
     <>
       {withBanner.map((event) => (
         <div key={event.id} className={styles.banner}>
-          <img src={event.bannerImageUrl} alt={event.title} className={styles.bannerImage} />
+          <SafeImage src={event.bannerImageUrl} alt={event.title} className={styles.bannerImage} />
           <div className={styles.bannerAction}>
             <SignupButton event={event} registered={registered.has(event.id)} />
           </div>
@@ -88,7 +89,7 @@ export function HomeEventBanner() {
 
       {popupEvent && (
         <Modal title={popupEvent.title} onClose={() => setPopupEvent(null)}>
-          <img src={popupEvent.popupImageUrl} alt={popupEvent.title} className={styles.popupImage} />
+          <SafeImage src={popupEvent.popupImageUrl} alt={popupEvent.title} className={styles.popupImage} />
           <div className={styles.popupAction} onClick={() => setPopupEvent(null)}>
             <SignupButton event={popupEvent} registered={registered.has(popupEvent.id)} />
           </div>

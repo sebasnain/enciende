@@ -1,3 +1,4 @@
+import { SafeImage } from '@/components/ui/SafeImage'
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
@@ -94,7 +95,7 @@ export function CommunityLibraryDetail() {
 
   return (
     <article>
-      {title.coverImageUrl && <img src={title.coverImageUrl} alt="" className={styles.detailCover} />}
+      {title.coverImageUrl && <SafeImage src={title.coverImageUrl} alt="" className={styles.detailCover} />}
       <h1>{title.title}</h1>
       <p style={{ color: 'var(--color-ink-400)' }}>
         {title.author}

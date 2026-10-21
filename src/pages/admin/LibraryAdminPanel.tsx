@@ -20,7 +20,7 @@ const libraryTitleFields: AdminField[] = [
   { key: 'publisher', label: 'Editorial', type: 'text' },
   { key: 'category', label: 'Categoría', type: 'text' },
   { key: 'description', label: 'Descripción', type: 'textarea' },
-  { key: 'coverImageUrl', label: 'Imagen de portada (URL)', type: 'text' },
+  { key: 'coverImageUrl', label: 'Portada del libro', type: 'image' },
 ]
 
 export function LibraryAdminPanel() {

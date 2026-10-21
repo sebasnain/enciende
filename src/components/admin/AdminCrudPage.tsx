@@ -2,12 +2,14 @@ import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'rea
 import { Button } from '@/components/ui/Button'
 import { Spinner } from '@/components/ui/Spinner'
 import { Icon } from '@/components/ui/Icon'
+import { SafeImage } from '@/components/ui/SafeImage'
+import { uploadImage } from '@/services/storage.service'
 import styles from './AdminCrudPage.module.css'
 
 export type AdminField = {
   key: string
   label: string
-  type: 'text' | 'textarea' | 'number' | 'checkbox' | 'datetime' | 'select'
+  type: 'text' | 'textarea' | 'number' | 'checkbox' | 'datetime' | 'select' | 'image'
   options?: string[]
   /** Solo para 'datetime': permite dejar la fecha vacía (se guarda como null). */
   optional?: boolean
@@ -80,6 +82,7 @@ export function AdminCrudPage<T extends { id: string }>({
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
   const [justSaved, setJustSaved] = useState(false)
+  const [uploadingKey, setUploadingKey] = useState<string | null>(null)
   const inlineFormRef = useRef<HTMLFormElement>(null)
 
   async function reload() {
@@ -144,6 +147,20 @@ export function AdminCrudPage<T extends { id: string }>({
     return idleLabel
   }
 
+  async function handleUpload(key: string, file: File | undefined) {
+    if (!file) return
+    setUploadingKey(key)
+    setSaveError(null)
+    try {
+      const url = await uploadImage(file)
+      setForm((f) => ({ ...f, [key]: url }))
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : 'No se pudo subir la imagen.')
+    } finally {
+      setUploadingKey(null)
+    }
+  }
+
   function renderFields() {
     return fields.map((field) => (
       <div key={field.key}>
@@ -175,6 +192,29 @@ export function AdminCrudPage<T extends { id: string }>({
                 onChange={(e) => setForm((f) => ({ ...f, [field.key]: e.target.checked }))}
               />
               {field.label}
+            </>
+          ) : field.type === 'image' ? (
+            <>
+              <input
+                className={styles.input}
+                type="text"
+                placeholder="Pegá una URL o subí una foto"
+                value={(form[field.key] as string) ?? ''}
+                onChange={(e) => setForm((f) => ({ ...f, [field.key]: e.target.value }))}
+              />
+              <input
+                type="file"
+                accept="image/*"
+                disabled={uploadingKey === field.key}
+                onChange={(e) => {
+                  handleUpload(field.key, e.target.files?.[0])
+                  e.target.value = ''
+                }}
+              />
+              {uploadingKey === field.key && <small>Subiendo…</small>}
+              {!!form[field.key] && (
+                <SafeImage src={form[field.key] as string} alt="" style={{ maxWidth: 140, maxHeight: 140, borderRadius: 8, objectFit: 'cover' }} />
+              )}
             </>
           ) : (
             <input
@@ -209,7 +249,7 @@ export function AdminCrudPage<T extends { id: string }>({
           </p>
           {renderFields()}
           <div className={styles.formActions}>
-            <Button type="submit" disabled={saving}>
+            <Button type="submit" disabled={saving || !!uploadingKey}>
               {submitLabel('Crear')}
             </Button>
           </div>
@@ -242,7 +282,7 @@ export function AdminCrudPage<T extends { id: string }>({
               </p>
               {renderFields()}
               <div className={styles.formActions}>
-                <Button type="submit" disabled={saving}>
+                <Button type="submit" disabled={saving || !!uploadingKey}>
                   {submitLabel('Guardar cambios')}
                 </Button>
                 <Button type="button" variant="ghost" onClick={resetForm}>

@@ -21,7 +21,7 @@ type Tab = (typeof TABS)[number]
 const devotionalFields: AdminField[] = [
   { key: 'title', label: 'Título', type: 'text' },
   { key: 'body', label: 'Contenido (markdown)', type: 'textarea' },
-  { key: 'coverImage', label: 'Imagen de portada (URL)', type: 'text' },
+  { key: 'coverImage', label: 'Imagen de portada', type: 'image' },
   { key: 'publishAt', label: 'Publicar el (opcional, día y hora; vacío = ya mismo)', type: 'datetime', optional: true },
 ]
 
@@ -29,7 +29,7 @@ const studyFields: AdminField[] = [
   { key: 'title', label: 'Título', type: 'text' },
   { key: 'series', label: 'Serie', type: 'text' },
   { key: 'body', label: 'Contenido (markdown)', type: 'textarea' },
-  { key: 'coverImage', label: 'Imagen de portada (URL)', type: 'text' },
+  { key: 'coverImage', label: 'Imagen de portada', type: 'image' },
   { key: 'publishAt', label: 'Publicar el (opcional, día y hora; vacío = ya mismo)', type: 'datetime', optional: true },
 ]
 
@@ -38,7 +38,7 @@ const planFields: AdminField[] = [
   { key: 'description', label: 'Descripción', type: 'textarea' },
   { key: 'durationDays', label: 'Duración (días)', type: 'number' },
   { key: 'category', label: 'Categoría', type: 'text' },
-  { key: 'coverImage', label: 'Imagen de portada (URL)', type: 'text' },
+  { key: 'coverImage', label: 'Imagen de portada', type: 'image' },
   { key: 'publishAt', label: 'Mostrar desde (opcional, día y hora; vacío = ya mismo)', type: 'datetime', optional: true },
   { key: 'published', label: 'Publicado (con fecha, se muestra recién desde ese día y hora)', type: 'checkbox' },
 ]
@@ -57,7 +57,7 @@ const productFields: AdminField[] = [
   { key: 'status', label: 'Disponibilidad', type: 'select', options: [...PRODUCT_STATUSES] },
   { key: 'originalPrice', label: 'Precio anterior (opcional, sale tachado)', type: 'number' },
   { key: 'price', label: 'Precio', type: 'number' },
-  { key: 'imageURL', label: 'Imagen (URL)', type: 'text' },
+  { key: 'imageURL', label: 'Imagen', type: 'image' },
   { key: 'description', label: 'Descripción', type: 'textarea' },
   { key: 'available', label: 'Disponible', type: 'checkbox' },
 ]

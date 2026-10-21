@@ -1,0 +1,20 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isStaff() {
+      return request.auth != null &&
+        firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role in ['admin', 'bibliotecario'];
+    }
+
+    // Imágenes subidas desde el panel (portadas, productos, banners). Lectura pública para poder mostrarlas.
+    match /uploads/{fileName} {
+      allow read: if true;
+      allow create: if isStaff()
+        && request.resource.size < 3 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+      allow update, delete: if isStaff();
+    }
+  }
+}

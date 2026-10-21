@@ -1,3 +1,4 @@
+import { SafeImage } from '@/components/ui/SafeImage'
 import { useEffect, useMemo, useState, type CSSProperties } from 'react'
 import { listProducts } from '@/services/products.service'
 import { getSocialSettings } from '@/services/live.service'
@@ -95,7 +96,7 @@ export function Library() {
                   style={{ '--accent': categoryAccent(product.category) } as CSSProperties}
                 >
                   <div className={styles.imageWrap}>
-                    <img src={product.imageURL} alt={product.name} className={styles.image} />
+                    <SafeImage src={product.imageURL} alt={product.name} className={styles.image} />
                     {product.category && <span className={styles.categoryBadge}>{product.category}</span>}
                     <span className={`${styles.statusBadge} ${status === 'Preventa' ? styles.statusPreventa : styles.statusStock}`}>
                       {status}
