@@ -7,8 +7,6 @@ import { Button } from '@/components/ui/Button'
 import { MemberPicker } from './MemberPicker'
 import styles from '@/components/admin/AdminCrudPage.module.css'
 
-const ONE_MONTH_MS = 30 * 24 * 60 * 60 * 1000
-
 function formatDate(timestamp: number): string {
   return new Date(timestamp).toLocaleDateString('es-AR')
 }
@@ -26,7 +24,7 @@ export function MemberMembershipManager() {
     if (!member) return
     setSaving(true)
     try {
-      const membership = { planId: DEFAULT_MEMBERSHIP_PLAN_ID, status: 'activa' as const, renewalDate: Date.now() + ONE_MONTH_MS }
+      const membership = { planId: DEFAULT_MEMBERSHIP_PLAN_ID, status: 'activa' as const, renewalDate: null }
       await setLibraryMembership(member.uid, membership)
       setMember({ ...member, libraryMembership: membership })
     } finally {
@@ -58,7 +56,7 @@ export function MemberMembershipManager() {
       {member && (
         <div style={{ marginTop: 8 }}>
           {isMembershipActive(member.libraryMembership) ? (
-            <p>Membresía activa hasta el {member.libraryMembership!.renewalDate ? formatDate(member.libraryMembership!.renewalDate!) : '—'}.</p>
+            <p>Membresía activa{member.libraryMembership!.renewalDate ? ` hasta el ${formatDate(member.libraryMembership!.renewalDate)}` : ' (sin vencimiento)'}.</p>
           ) : (
             <p style={{ color: 'var(--color-ink-400)' }}>No tiene una membresía activa.</p>
           )}
@@ -70,14 +68,14 @@ export function MemberMembershipManager() {
 
           <div className={styles.formActions}>
             <Button type="button" onClick={handleActivate} disabled={saving}>
-              Activar / renovar 1 mes
+              Dar de alta
             </Button>
             <Button type="button" variant="ghost" onClick={handleDeactivate} disabled={saving}>
               Dar de baja
             </Button>
           </div>
           <p style={{ fontSize: 12, color: 'var(--color-ink-400)', margin: 0 }}>
-            Confirmá el pago por WhatsApp antes de activar o renovar.
+            La membresía no vence sola: queda activa hasta que la des de baja. Confirmá el pago por WhatsApp antes de darla de alta.
           </p>
         </div>
       )}
