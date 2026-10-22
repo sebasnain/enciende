@@ -13,6 +13,7 @@ import {
 } from '@/services/library.service'
 import { DEFAULT_CONCURRENT_LOAN_LIMIT, isMembershipActive, type LibraryCopy, type LibraryReservation, type LibraryTitle } from '@/types/library'
 import { Spinner } from '@/components/ui/Spinner'
+import { MembershipRequestButton } from './MembershipRequestButton'
 import styles from './CommunityLibrary.module.css'
 
 function formatDate(timestamp: number): string {
@@ -30,6 +31,7 @@ export function CommunityLibraryDetail() {
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState(false)
   const [requesting, setRequesting] = useState(false)
+  const [whatsappNumber, setWhatsappNumber] = useState('')
 
   function reloadMyStatus() {
     if (!user) {
@@ -56,7 +58,10 @@ export function CommunityLibraryDetail() {
       .catch(() => setLoadError(true))
       .finally(() => setLoading(false))
     getMembershipPlan().then((plan) => {
-      if (plan) setLoanLimit(plan.concurrentLoanLimit)
+      if (plan) {
+        setLoanLimit(plan.concurrentLoanLimit)
+        setWhatsappNumber(plan.whatsappNumber ?? '')
+      }
     })
     reloadMyStatus()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -92,6 +97,12 @@ export function CommunityLibraryDetail() {
   const available = copies.filter((c) => c.status === 'disponible').length
   const membershipInactive = !isMembershipActive(profile?.libraryMembership)
   const atLimit = commitmentCount >= loanLimit
+  const whatsappHref =
+    whatsappNumber && profile
+      ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
+          `Hola! Soy ${profile.displayName} y quiero solicitar el libro "${title.title}" de la biblioteca de Enciende.`,
+        )}`
+      : null
 
   return (
     <article>
@@ -108,8 +119,20 @@ export function CommunityLibraryDetail() {
           ? 'Todavía no hay ejemplares cargados.'
           : available > 0
             ? `${available} de ${copies.length} ejemplares disponibles`
-            : 'Sin ejemplares disponibles por ahora'}
+            : 'Prestado: no hay ejemplares disponibles por ahora'}
       </p>
+
+      {user && whatsappHref && !membershipInactive && (
+        <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className={styles.reserveButton} style={{ display: 'inline-block', textAlign: 'center', textDecoration: 'none' }}>
+          Solicitar por WhatsApp
+        </a>
+      )}
+      {user && whatsappHref && membershipInactive && (
+        <>
+          <p className={styles.availabilityNone}>Necesitás una membresía activa para solicitar libros.</p>
+          <MembershipRequestButton />
+        </>
+      )}
 
       {copies.length > 0 && (
         <div>

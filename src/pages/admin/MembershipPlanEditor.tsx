@@ -70,6 +70,18 @@ export function MembershipPlanEditor({ readOnly }: MembershipPlanEditorProps) {
         />
       </label>
       <label>
+        <span>WhatsApp para solicitudes de libros (con código de país, ej: 5491122334455)</span>
+        <input
+          className={styles.input}
+          type="tel"
+          inputMode="numeric"
+          placeholder="5491122334455"
+          value={plan.whatsappNumber ?? ''}
+          disabled={readOnly}
+          onChange={(e) => setPlan({ ...plan, whatsappNumber: e.target.value.replace(/\D/g, '') })}
+        />
+      </label>
+      <label>
         <span>Descripción (opcional)</span>
         <textarea
           className={styles.textarea}

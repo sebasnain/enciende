@@ -15,6 +15,7 @@ export function MemberMembershipManager() {
   const [member, setMember] = useState<UserProfile | null>(null)
   const [plan, setPlan] = useState<LibraryMembershipPlan | null>(null)
   const [saving, setSaving] = useState(false)
+  const active = !!member && isMembershipActive(member.libraryMembership)
 
   useEffect(() => {
     getMembershipPlan().then(setPlan)
@@ -67,10 +68,10 @@ export function MemberMembershipManager() {
           )}
 
           <div className={styles.formActions}>
-            <Button type="button" onClick={handleActivate} disabled={saving}>
+            <Button type="button" onClick={handleActivate} disabled={saving || active} style={active ? { opacity: 0.4 } : undefined}>
               Dar de alta
             </Button>
-            <Button type="button" variant="ghost" onClick={handleDeactivate} disabled={saving}>
+            <Button type="button" variant={active ? undefined : 'ghost'} onClick={handleDeactivate} disabled={saving || !active} style={!active ? { opacity: 0.4 } : undefined}>
               Dar de baja
             </Button>
           </div>

@@ -6,6 +6,8 @@ import type { LibraryCopy, LibraryTitle } from '@/types/library'
 import { ListCard } from '@/components/ui/ListCard'
 import { Spinner } from '@/components/ui/Spinner'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { LibraryIntroModal } from './LibraryIntroModal'
+import { MembershipRequestButton } from './MembershipRequestButton'
 import styles from './CommunityLibrary.module.css'
 
 export function CommunityLibraryList() {
@@ -60,6 +62,9 @@ export function CommunityLibraryList() {
         )}
       </div>
 
+      <LibraryIntroModal />
+      <MembershipRequestButton />
+
       {titles.length === 0 ? (
         <EmptyState message="Todavía no hay libros cargados en la biblioteca." />
       ) : (
@@ -82,7 +87,11 @@ export function CommunityLibraryList() {
             const availability = availabilityByTitle.get(title.id)
             const subtitle = [
               title.author,
-              availability ? `${availability.available} de ${availability.total} disponibles` : 'Sin ejemplares cargados',
+              availability
+                ? availability.available === 0
+                  ? 'Prestado'
+                  : `${availability.available} de ${availability.total} disponibles`
+                : 'Sin ejemplares cargados',
             ]
               .filter(Boolean)
               .join(' · ')

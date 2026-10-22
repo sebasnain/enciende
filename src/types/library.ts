@@ -93,6 +93,8 @@ export interface LibraryMembershipPlan {
   concurrentLoanLimit: number
   price: number
   description: string
+  /** WhatsApp (con código de país, solo dígitos) al que llegan las solicitudes de libros. */
+  whatsappNumber?: string
 }
 
 export interface LibraryMembership {
