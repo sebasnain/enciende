@@ -20,6 +20,7 @@ interface MembershipPlanEditorProps {
 export function MembershipPlanEditor({ readOnly }: MembershipPlanEditorProps) {
   const [plan, setPlan] = useState<Omit<LibraryMembershipPlan, 'id'> | null>(null)
   const [saveState, setSaveState] = useState<SaveState>('idle')
+  const [open, setOpen] = useState(false)
 
   useEffect(() => {
     getMembershipPlan().then((p) => setPlan(p ?? EMPTY_PLAN))
@@ -42,7 +43,11 @@ export function MembershipPlanEditor({ readOnly }: MembershipPlanEditorProps) {
 
   return (
     <div className={styles.form}>
-      <h2>Membresía</h2>
+      <Button type="button" variant={open ? 'ghost' : 'secondary'} onClick={() => setOpen((o) => !o)}>
+        {open ? 'Ocultar configuración' : 'Configurar membresía'}
+      </Button>
+      {open && (
+        <>
       <label>
         <span>Nombre</span>
         <input className={styles.input} value={plan.name} disabled={readOnly} onChange={(e) => setPlan({ ...plan, name: e.target.value })} />
@@ -98,6 +103,8 @@ export function MembershipPlanEditor({ readOnly }: MembershipPlanEditorProps) {
       <p style={{ fontSize: 12, color: 'var(--color-ink-400)', margin: 0 }}>
         El pago se coordina manualmente por WhatsApp; acá solo se define el cupo y el precio de referencia.
       </p>
+        </>
+      )}
     </div>
   )
 }

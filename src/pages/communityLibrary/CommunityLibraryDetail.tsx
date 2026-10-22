@@ -7,11 +7,9 @@ import {
   getLibraryTitle,
   getMembershipPlan,
   listCopiesByTitle,
-  listLoansByUser,
   listReservationsByUser,
-  requestReservation,
 } from '@/services/library.service'
-import { DEFAULT_CONCURRENT_LOAN_LIMIT, isMembershipActive, type LibraryCopy, type LibraryReservation, type LibraryTitle } from '@/types/library'
+import { isMembershipActive, type LibraryCopy, type LibraryReservation, type LibraryTitle } from '@/types/library'
 import { Spinner } from '@/components/ui/Spinner'
 import { MembershipRequestButton } from './MembershipRequestButton'
 import styles from './CommunityLibrary.module.css'
@@ -26,8 +24,6 @@ export function CommunityLibraryDetail() {
   const [title, setTitle] = useState<LibraryTitle | null>(null)
   const [copies, setCopies] = useState<LibraryCopy[]>([])
   const [myReservation, setMyReservation] = useState<LibraryReservation | null>(null)
-  const [commitmentCount, setCommitmentCount] = useState(0)
-  const [loanLimit, setLoanLimit] = useState(DEFAULT_CONCURRENT_LOAN_LIMIT)
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState(false)
   const [requesting, setRequesting] = useState(false)
@@ -36,13 +32,10 @@ export function CommunityLibraryDetail() {
   function reloadMyStatus() {
     if (!user) {
       setMyReservation(null)
-      setCommitmentCount(0)
       return
     }
-    Promise.all([listLoansByUser(user.uid), listReservationsByUser(user.uid)]).then(([loans, reservations]) => {
-      const activeLoans = loans.filter((l) => l.status === 'activo')
+    listReservationsByUser(user.uid).then((reservations) => {
       const pendingReservations = reservations.filter((r) => r.status === 'en_espera' || r.status === 'disponible_para_retirar')
-      setCommitmentCount(activeLoans.length + pendingReservations.length)
       setMyReservation(pendingReservations.find((r) => r.titleId === titleId) ?? null)
     })
   }
@@ -59,25 +52,12 @@ export function CommunityLibraryDetail() {
       .finally(() => setLoading(false))
     getMembershipPlan().then((plan) => {
       if (plan) {
-        setLoanLimit(plan.concurrentLoanLimit)
         setWhatsappNumber(plan.whatsappNumber ?? '')
       }
     })
     reloadMyStatus()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [titleId, user])
-
-  async function handleRequest() {
-    if (!user || !profile || !title) return
-    setRequesting(true)
-    try {
-      await requestReservation({ titleId: title.id, titleName: title.title, userId: user.uid, memberName: profile.displayName })
-      reloadMyStatus()
-      listCopiesByTitle(titleId).then(setCopies)
-    } finally {
-      setRequesting(false)
-    }
-  }
 
   async function handleCancelReservation() {
     if (!myReservation) return
@@ -96,7 +76,6 @@ export function CommunityLibraryDetail() {
 
   const available = copies.filter((c) => c.status === 'disponible').length
   const membershipInactive = !isMembershipActive(profile?.libraryMembership)
-  const atLimit = commitmentCount >= loanLimit
   const whatsappHref =
     whatsappNumber && profile
       ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
@@ -159,25 +138,6 @@ export function CommunityLibraryDetail() {
 
           {user && !myReservation && membershipInactive && (
             <p className={styles.availabilityNone}>Necesitás una membresía activa para pedir libros. Hablá con el bibliotecario.</p>
-          )}
-
-          {user && !myReservation && !membershipInactive && atLimit && (
-            <p className={styles.availabilityNone}>
-              Ya tenés {commitmentCount} de {loanLimit} libros en uso. Devolvé uno para poder pedir otro.
-            </p>
-          )}
-
-          {user && !myReservation && !membershipInactive && !atLimit && (
-            <>
-              <button type="button" className={styles.reserveButton} onClick={handleRequest} disabled={requesting}>
-                {requesting ? 'Pidiendo…' : 'Pedir este libro'}
-              </button>
-              <p style={{ fontSize: 12, color: 'var(--color-ink-400)', margin: 0 }}>
-                {available > 0
-                  ? 'Te lo dejamos apartado 48hs para que pases a retirarlo.'
-                  : 'No hay ejemplares ahora: te anotamos en la lista de espera y te avisamos cuando se libere uno.'}
-              </p>
-            </>
           )}
         </div>
       )}
