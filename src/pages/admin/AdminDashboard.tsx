@@ -4,6 +4,7 @@ import { devotionalsService, studiesService } from '@/services/content.service'
 import { createEvent, deleteEvent, listUpcomingEvents, updateEvent } from '@/services/events.service'
 import { createProduct, deleteProduct, listProducts, updateProduct } from '@/services/products.service'
 import { createPlan, deletePlan, listAllPlans, updatePlan } from '@/services/plans.service'
+import { WEEKDAYS, isWeekly, type ChurchEvent } from '@/types/events'
 import { scheduledSuffix } from '@/utils/publishing'
 import { PRODUCT_CATEGORIES, PRODUCT_STATUSES } from '@/types/products'
 import { useAuth } from '@/context/AuthContext'
@@ -46,10 +47,27 @@ const planFields: AdminField[] = [
 const eventFields: AdminField[] = [
   { key: 'title', label: 'Título', type: 'text' },
   { key: 'description', label: 'Descripción', type: 'textarea' },
-  { key: 'startAt', label: 'Fecha y hora', type: 'datetime' },
+  { key: 'weekday', label: 'Repetición', type: 'weekday' },
+  { key: 'startAt', label: 'Fecha y hora', type: 'datetime', optional: true, hidden: (form) => isWeeklyForm(form) },
+  { key: 'time', label: 'Hora', type: 'time', hidden: (form) => !isWeeklyForm(form) },
+  { key: 'suspendedDates', label: 'Fechas suspendidas (elegí el día en que no hay actividad)', type: 'dateList', hidden: (form) => !isWeeklyForm(form) },
   { key: 'location', label: 'Lugar', type: 'text' },
   { key: 'category', label: 'Categoría', type: 'text' },
 ]
+
+function isWeeklyForm(form: Record<string, unknown>) {
+  return form.weekday !== null && form.weekday !== undefined && form.weekday !== ''
+}
+
+function validateEvent(payload: Record<string, unknown>) {
+  if (payload.weekday === null) return payload.startAt ? null : 'Elegí la fecha y hora de la actividad.'
+  if (!payload.time) return 'Elegí la hora de la actividad semanal.'
+  return null
+}
+
+function eventLabel(item: ChurchEvent) {
+  return isWeekly(item) ? `${item.title} (todos los ${WEEKDAYS[item.weekday!]}${item.time ? ` ${item.time}` : ''})` : item.title
+}
 
 const productFields: AdminField[] = [
   { key: 'name', label: 'Nombre', type: 'text' },
@@ -144,9 +162,10 @@ export function AdminDashboard() {
         <AdminCrudPage
           title="Actividades"
           fields={eventFields}
-          defaults={{ title: '', description: '', startAt: '', endAt: null, location: '', category: 'culto' }}
+          defaults={{ title: '', description: '', weekday: null, startAt: '', time: '', suspendedDates: [], endAt: null, location: '', category: 'culto' }}
           service={{ list: listUpcomingEvents, create: createEvent, update: updateEvent, remove: deleteEvent }}
-          labelOf={(item) => item.title}
+          labelOf={eventLabel}
+          validate={validateEvent}
           readOnly={!isAdmin}
         />
       )}

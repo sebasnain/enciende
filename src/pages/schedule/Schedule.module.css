@@ -18,6 +18,13 @@
   margin-top: 2px;
 }
 
+.suspended {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-flame-600);
+  margin-top: var(--space-1);
+}
+
 .location {
   font-size: 13px;
   color: var(--color-ink-400);

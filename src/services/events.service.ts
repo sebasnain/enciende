@@ -9,7 +9,7 @@ import {
   updateDoc,
 } from 'firebase/firestore'
 import { db } from '@/firebase/config'
-import type { ChurchEvent } from '@/types/events'
+import { isSuspendedOn, isWeekly, type ChurchEvent } from '@/types/events'
 
 const eventsRef = collection(db, 'events')
 
@@ -33,8 +33,10 @@ export async function deleteEvent(id: string) {
 export async function getTodayEvent(): Promise<ChurchEvent | null> {
   const events = await listUpcomingEvents()
   const now = new Date()
+  const weeklyToday = events.find((event) => isWeekly(event) && event.weekday === now.getDay() && !isSuspendedOn(event, now))
+  if (weeklyToday) return weeklyToday
   const todayEvent = events.find((event) => {
-    const eventDate = new Date(event.startAt)
+    const eventDate = new Date(event.startAt ?? NaN)
     return (
       Number.isFinite(event.startAt) &&
       eventDate.getFullYear() === now.getFullYear() &&

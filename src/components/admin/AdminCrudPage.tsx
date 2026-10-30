@@ -9,10 +9,19 @@ import styles from './AdminCrudPage.module.css'
 export type AdminField = {
   key: string
   label: string
-  type: 'text' | 'textarea' | 'number' | 'checkbox' | 'datetime' | 'select' | 'image'
+  type: 'text' | 'textarea' | 'number' | 'checkbox' | 'datetime' | 'select' | 'image' | 'weekday' | 'time' | 'dateList'
   options?: string[]
   /** Solo para 'datetime': permite dejar la fecha vacía (se guarda como null). */
   optional?: boolean
+  /** Oculta el campo según el estado del formulario. */
+  hidden?: (form: Record<string, unknown>) => boolean
+}
+
+const WEEKDAY_NAMES = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
+
+function formatDateKey(key: string): string {
+  const [y, m, d] = key.split('-').map(Number)
+  return new Intl.DateTimeFormat('es', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(y, m - 1, d))
 }
 
 function toDatetimeLocalValue(raw: unknown): string {
@@ -28,6 +37,11 @@ function toDatetimeLocalValue(raw: unknown): string {
 function buildPayload(form: Record<string, unknown>, fields: AdminField[]): Record<string, unknown> {
   const payload = { ...form }
   for (const field of fields) {
+    if (field.type === 'weekday') {
+      const raw = payload[field.key]
+      payload[field.key] = raw === '' || raw == null ? null : Number(raw)
+    }
+    if (field.type === 'time') payload[field.key] = payload[field.key] || null
     if (field.type === 'datetime') {
       const raw = payload[field.key]
       // Una fecha ya guardada llega como número (ms): hay que conservarla, no pisarla con null.
@@ -58,6 +72,8 @@ interface AdminCrudPageProps<T extends { id: string }> {
   keepEditingAfterCreate?: boolean
   /** Muestra el listado sin permitir crear, editar ni eliminar (p. ej. bibliotecario mirando otras pestañas). */
   readOnly?: boolean
+  /** Devuelve un mensaje de error si los datos a guardar no son válidos. */
+  validate?: (payload: Record<string, unknown>) => string | null
   /** Acciones extra en cada fila del listado, antes de Editar/Eliminar (no se muestran en modo solo lectura). */
   renderRowActions?: (item: T) => ReactNode
   /** Contenido extra arriba del formulario de "Nuevo", con acceso para prellenar campos (p. ej. un botón de escaneo). */
@@ -73,6 +89,7 @@ export function AdminCrudPage<T extends { id: string }>({
   renderAfterField,
   keepEditingAfterCreate,
   readOnly,
+  validate,
   renderBeforeNewForm,
   renderRowActions,
 }: AdminCrudPageProps<T>) {
@@ -114,6 +131,11 @@ export function AdminCrudPage<T extends { id: string }>({
     setSaveError(null)
     try {
       const payload = buildPayload(form, fields)
+      const invalid = validate?.(payload)
+      if (invalid) {
+        setSaveError(invalid)
+        return
+      }
       if (editingId) {
         await service.update(editingId, payload)
         resetForm()
@@ -162,11 +184,52 @@ export function AdminCrudPage<T extends { id: string }>({
   }
 
   function renderFields() {
-    return fields.map((field) => (
+    return fields.filter((field) => !field.hidden?.(form)).map((field) => (
       <div key={field.key}>
         <label className={field.type === 'checkbox' ? styles.checkboxRow : undefined}>
           {field.type !== 'checkbox' && <span>{field.label}</span>}
-          {field.type === 'textarea' ? (
+          {field.type === 'dateList' ? (
+            <>
+              <input
+                className={styles.input}
+                type="date"
+                value=""
+                onChange={(e) => {
+                  const value = e.target.value
+                  if (!value) return
+                  setForm((f) => {
+                    const current = (f[field.key] as string[] | undefined) ?? []
+                    return current.includes(value) ? f : { ...f, [field.key]: [...current, value].sort() }
+                  })
+                }}
+              />
+              {((form[field.key] as string[] | undefined) ?? []).map((key) => (
+                <span key={key} className={styles.checkboxRow}>
+                  {formatDateKey(key)}
+                  <button
+                    type="button"
+                    className={styles.link}
+                    onClick={() => setForm((f) => ({ ...f, [field.key]: ((f[field.key] as string[]) ?? []).filter((k) => k !== key) }))}
+                  >
+                    Quitar
+                  </button>
+                </span>
+              ))}
+            </>
+          ) : field.type === 'weekday' ? (
+            <select
+              className={styles.input}
+              value={form[field.key] == null ? '' : String(form[field.key])}
+              onChange={(e) => setForm((f) => ({ ...f, [field.key]: e.target.value }))}
+            >
+              <option value="">Fecha puntual (no se repite)</option>
+              {WEEKDAY_NAMES.map((name, i) => (
+                <option key={name} value={i}>
+                  Todos los {name.toLowerCase()}
+                </option>
+              ))}
+            </select>
+          ) : field.type === 'textarea' ? (
             <textarea
               className={styles.textarea}
               value={(form[field.key] as string) ?? ''}
@@ -219,7 +282,7 @@ export function AdminCrudPage<T extends { id: string }>({
           ) : (
             <input
               className={styles.input}
-              type={field.type === 'number' ? 'number' : field.type === 'datetime' ? 'datetime-local' : 'text'}
+              type={field.type === 'number' ? 'number' : field.type === 'datetime' ? 'datetime-local' : field.type === 'time' ? 'time' : 'text'}
               required={field.type === 'datetime' && !field.optional}
               value={field.type === 'datetime' ? toDatetimeLocalValue(form[field.key]) : ((form[field.key] as string | number) ?? '')}
               onChange={(e) => setForm((f) => ({ ...f, [field.key]: e.target.value }))}
