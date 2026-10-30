@@ -9,7 +9,7 @@ import styles from './AdminCrudPage.module.css'
 export type AdminField = {
   key: string
   label: string
-  type: 'text' | 'textarea' | 'number' | 'checkbox' | 'datetime' | 'select' | 'image' | 'weekday' | 'time' | 'dateList'
+  type: 'text' | 'textarea' | 'number' | 'checkbox' | 'datetime' | 'select' | 'image' | 'weekdays' | 'time' | 'dateList'
   options?: string[]
   /** Solo para 'datetime': permite dejar la fecha vacía (se guarda como null). */
   optional?: boolean
@@ -37,10 +37,6 @@ function toDatetimeLocalValue(raw: unknown): string {
 function buildPayload(form: Record<string, unknown>, fields: AdminField[]): Record<string, unknown> {
   const payload = { ...form }
   for (const field of fields) {
-    if (field.type === 'weekday') {
-      const raw = payload[field.key]
-      payload[field.key] = raw === '' || raw == null ? null : Number(raw)
-    }
     if (field.type === 'time') payload[field.key] = payload[field.key] || null
     if (field.type === 'datetime') {
       const raw = payload[field.key]
@@ -216,19 +212,25 @@ export function AdminCrudPage<T extends { id: string }>({
                 </span>
               ))}
             </>
-          ) : field.type === 'weekday' ? (
-            <select
-              className={styles.input}
-              value={form[field.key] == null ? '' : String(form[field.key])}
-              onChange={(e) => setForm((f) => ({ ...f, [field.key]: e.target.value }))}
-            >
-              <option value="">Fecha puntual (no se repite)</option>
+          ) : field.type === 'weekdays' ? (
+            <>
               {WEEKDAY_NAMES.map((name, i) => (
-                <option key={name} value={i}>
-                  Todos los {name.toLowerCase()}
-                </option>
+                <span key={name} className={styles.checkboxRow}>
+                  <input
+                    type="checkbox"
+                    checked={((form[field.key] as number[] | undefined) ?? []).includes(i)}
+                    onChange={(e) =>
+                      setForm((f) => {
+                        const current = (f[field.key] as number[] | undefined) ?? []
+                        const next = e.target.checked ? [...current, i] : current.filter((d) => d !== i)
+                        return { ...f, [field.key]: next.sort((a, b) => a - b) }
+                      })
+                    }
+                  />
+                  {name}
+                </span>
               ))}
-            </select>
+            </>
           ) : field.type === 'textarea' ? (
             <textarea
               className={styles.textarea}

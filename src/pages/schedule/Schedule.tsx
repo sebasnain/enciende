@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { listUpcomingEvents } from '@/services/events.service'
-import { WEEKDAYS, isWeekly, nextWeeklyDate, parseDateKey, dateKey, type ChurchEvent } from '@/types/events'
+import { WEEKDAYS, isWeekly, weekdaysOf, nextWeeklyDate, parseDateKey, dateKey, type ChurchEvent } from '@/types/events'
 import { Spinner } from '@/components/ui/Spinner'
 import { EmptyState } from '@/components/ui/EmptyState'
 import styles from './Schedule.module.css'
@@ -15,14 +15,19 @@ interface Entry {
   suspendedLabels: string[]
 }
 
+function joinDays(days: number[]): string {
+  const names = [...days].sort((a, b) => ((a + 6) % 7) - ((b + 6) % 7)).map((d) => WEEKDAYS[d])
+  return names.length > 1 ? `${names.slice(0, -1).join(', ')} y ${names[names.length - 1]}` : names[0]
+}
+
 function buildEntry(event: ChurchEvent): Entry | null {
   if (isWeekly(event)) {
     const next = nextWeeklyDate(event)
     const todayKey = dateKey(new Date())
     const suspendedLabels = (event.suspendedDates ?? [])
-      .filter((key) => key >= todayKey && parseDateKey(key).getDay() === event.weekday)
+      .filter((key) => key >= todayKey && weekdaysOf(event).includes(parseDateKey(key).getDay()))
       .map((key) => dayFormatter.format(parseDateKey(key)))
-    const when = `Todos los ${WEEKDAYS[event.weekday!]}${event.time ? ` · ${event.time} hs` : ''}`
+    const when = `Todos los ${joinDays(weekdaysOf(event))}${event.time ? ` · ${event.time} hs` : ''}`
     const [h, m] = (event.time ?? '').split(':').map(Number)
     const sortAt = next ? next.getTime() + ((h || 0) * 60 + (m || 0)) * 60000 : Number.MAX_SAFE_INTEGER
     return { event, sortAt, dateLabel: next ? `${when} · próxima: ${dayFormatter.format(next)}` : when, suspendedLabels }

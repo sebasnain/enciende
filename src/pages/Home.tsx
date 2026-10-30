@@ -90,7 +90,7 @@ export function Home() {
         </div>
       )}
 
-      <Link to="/cronograma" className={styles.activityCard} style={{ backgroundImage: `url(${activityBg})` }}>
+      <Link to="/cronograma" className={styles.activityCard} style={{ backgroundImage: `url(${todayEvent?.bannerImage || activityBg})` }}>
         <div className={styles.activityOverlay} />
         <div className={styles.activityContent}>
           <p className={styles.activityTitle}>Actividad para hoy</p>
